@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -249,7 +248,6 @@
         return "International 🌐";
     }
 
-    // --- Format Number with KOLA and Music Color ---
     function formatKolaNumber(num) {
         if(!num) return "---";
         const n = num.toString();
@@ -264,7 +262,7 @@
         if (/[\u0980-\u09FF]/.test(text)) return "Bengali (বাংলা)";
         if (/[\u0900-\u097F]/.test(text)) {
             if (t.includes("नेपाली")) return "Nepali (नेपाली)";
-            if (t.includes("मराठी")) return "Marathi (मराठी)";
+            if (t.includes("मराठी")) return "Marathi (मরাঠী)";
             if (t.includes("ગુજરાતી")) return "Gujarati (ગુજરાતી)";
             return "Hindi (हिन्दी)";
         }
@@ -287,9 +285,9 @@
         if (/[\uAC00-\uD7AF]/.test(text)) return "Korean (한국어)";
         if (/[\u0E00-\u0E7F]/.test(text)) return "Thai (ไทย)";
         if (/[\u1000-\u109F]/.test(text)) return "Burmese (မြန်မာ)";
-        if (/[\u1780-\u17FF]/.test(text)) return "Khmer (ភាសាខ្មែរ)";
+        if (/[\u1780-\u17FF]/.test(text)) return "Khmer (ភាសាខ្មဲរ)";
         if (/[\u0E80-\u0EFF]/.test(text)) return "Lao (ພາສາລາວ)";
-        if (/[\u0D80-\u0DFF]/.test(text)) return "Sinhala (සිંહල)";
+        if (/[\u0D80-\u0DFF]/.test(text)) return "Sinhala (සිංහල)";
         if (/[\u0590-\u05FF]/.test(text)) return "Hebrew (עברית)";
         if (/[\u0370-\u03FF]/.test(text)) return "Greek (Ελληνικά)";
         if (/[\u1200-\u137F]/.test(text)) return "Amharic (አማርኛ)";
@@ -331,9 +329,20 @@
         return "SERVICE";
     }
 
+    // এপিআই অনুসারে অরিজিনাল রেঞ্জ শনাক্তকরণ ফাংশন (Updated)
     function findMatchedRange(phoneNum) {
         let clean = phoneNum.replace(/\D/g, '');
-        return clean.substring(0, 7) + "XXX";
+        // এপিআই থেকে প্রাপ্ত নাম্বারের প্রিফিক্স ৫-৬ ডিজিটই সাধারণত অরিজিনাল রেঞ্জ হিসেবে কাজ করে
+        return clean.substring(0, 6);
+    }
+
+    // রেঞ্জ ক্লিক করলে অটোমেটিক ইনপুটে বসানো এবং সেকশন পরিবর্তনের ফাংশন (Updated)
+    function useRange(r) {
+        if(!r) return;
+        const cleanR = r.toString().replace('XXX','');
+        document.getElementById('ridInput').value = cleanR;
+        saveInputs();
+        showSection('generate-sec');
     }
 
     async function handleUserAuth() {
@@ -361,7 +370,6 @@
         if (myWorkerID) database.ref('users/' + myWorkerID).update({ balance: Number(currentBalance.toFixed(2)) });
     }
 
-    // --- ওটিপি আসা চেক এবং অটো-কপি/সাউন্ড ফাংশন ---
     async function getOTPs() {
         const now = Date.now();
         myRequests = myRequests.filter(req => (now - req.createdAt) < (25 * 60 * 1000));
@@ -375,20 +383,16 @@
                 const code = codeMatch ? codeMatch[0].replace(/\s+/g, '') : null;
                 myRequests.forEach(req => {
                     if(!req.receivedOtpIds.includes(otp.otp_id) && req.full.includes(otp.number.slice(-6))) {
-                        // এই কন্ডিশন মানে নতুন ওটিপি এসেছে
                         currentBalance += (req.receivedOtpIds.length === 0) ? 0.30 : 0.20;
                         req.receivedOtpIds.push(otp.otp_id); 
                         req.otp = code;
-                        
-                        // অটো কপি এবং সাউন্ড প্লে
                         if(code) {
-                            smartCopy(code); // অটো কপি
+                            smartCopy(code);
                             if (audioUnlocked && document.getElementById('soundToggle').checked) {
                                 otpSound.currentTime = 0;
-                                otpSound.play().catch(e => {}); // ওটিপি সাউন্ড প্লে
+                                otpSound.play().catch(e => {});
                             }
                         }
-
                         if (!req.statusMsg) req.statusMsg = successMessages[Math.floor(Math.random() * successMessages.length)];
                         updated = true;
                     }
@@ -401,8 +405,9 @@
                 if (!otpArrivalTimes[otp.otp_id]) otpArrivalTimes[otp.otp_id] = new Date().toLocaleTimeString('en-US', { hour12: true });
                 const codeMatch = otp.message.match(/(?:\d[\s-]?){4,8}\d/);
                 const code = codeMatch ? codeMatch[0].replace(/\s+/g, '') : null;
+                const originalRange = findMatchedRange(otp.number); // অরিজিনাল রেঞ্জ বের করা
                 return `<div class="grid-row">
-                    <div><div>${formatKolaNumber(otp.number)}</div><div class="country-label">${getCountryInfo(otp.number)}</div><div class="range-sub-text" onclick="useRange('${findMatchedRange(otp.number)}')">${findMatchedRange(otp.number)}</div></div>
+                    <div><div>${formatKolaNumber(otp.number)}</div><div class="country-label">${getCountryInfo(otp.number)}</div><div class="range-sub-text" onclick="useRange('${originalRange}')">${originalRange}XXX</div></div>
                     <div><span class="service-badge">${detectCompany(otp.message)}</span><br><span class="lang-badge">${detectLanguage(otp.message)}</span></div>
                     <div class="small text-white" style="font-size:0.7rem;">${otp.message}</div>
                     <div>${code ? `<div class="otp-copy-btn" onclick="smartCopy('${code}')">${code}</div>` : `---`}<span class="otp-time-label">${otpArrivalTimes[otp.otp_id]}</span></div>
@@ -478,19 +483,35 @@
         await loadServices();
     }
     async function fetchConsole() { try { const res = await fetch(`${BASE_URL}/console`, { headers }); const d = await res.json(); liveHitsData = d.data.hits; filterLiveFeed(); } catch(e){} }
+    
+    // লাইভ ফিডে কান্ট্রি শনাক্তকরণ এবং ক্লিক ইভেন্ট আপডেট (Updated)
     function filterLiveFeed() {
         const q = document.getElementById('liveSearchInput').value.toLowerCase();
         const f = liveHitsData.filter(h => (h.sid || "").toLowerCase().includes(q) || (h.range || "").toLowerCase().includes(q));
-        document.getElementById('consoleItems').innerHTML = f.map(h => `<div class="grid-row"><div class="text-info fw-bold">${h.sid}</div><div><span class="lang-badge">${detectLanguage(h.message)}</span></div><div class="small text-white">${h.message}</div><div onclick="useRange('${h.range}')" style="cursor:pointer; color:var(--apple-red); font-weight:bold;">${h.range}</div></div>`).join('');
+        document.getElementById('consoleItems').innerHTML = f.map(h => {
+            const country = getCountryInfo(h.range);
+            return `<div class="grid-row">
+                <div class="text-info fw-bold">${h.sid}<br><span class="country-label" style="font-size:0.6rem;">${country}</span></div>
+                <div><span class="lang-badge">${detectLanguage(h.message)}</span></div>
+                <div class="small text-white">${h.message}</div>
+                <div onclick="useRange('${h.range}')" style="cursor:pointer; color:var(--apple-red); font-weight:bold;">${h.range}</div>
+            </div>`
+        }).join('');
     }
+
     async function fetchAllRanges() { const res = await fetch(`${BASE_URL}/liveaccess`, { headers }); const d = await res.json(); window.allServicesData = d.data.services; document.getElementById('service-grid').innerHTML = d.data.services.map(s => `<div class="col-6"><div class="main-card p-3" onclick="viewSubRanges('${s.sid}')"><b>${s.sid}</b></div></div>`).join(''); }
-    function viewSubRanges(sid) { showSection('sub-range-sec'); const s = window.allServicesData.find(x => x.sid === sid); document.getElementById('sub-range-grid').innerHTML = (s.ranges || []).map(r => `<div class="col-4"><div class="main-card p-2" onclick="useRange('${r}')">${r}</div></div>`).join(''); }
-    function useRange(r) { document.getElementById('ridInput').value = r.replace('XXX',''); showSection('generate-sec'); saveInputs(); }
+    
+    // সাব-রেঞ্জ ক্লিক ইভেন্ট আপডেট (Updated)
+    function viewSubRanges(sid) { 
+        showSection('sub-range-sec'); 
+        const s = window.allServicesData.find(x => x.sid === sid); 
+        document.getElementById('sub-range-grid').innerHTML = (s.ranges || []).map(r => `<div class="col-4"><div class="main-card p-2" onclick="useRange('${r}')" style="font-size: 0.75rem;">${r}</div></div>`).join(''); 
+    }
+
     async function loadServices() { try { const res = await fetch(`${BASE_URL}/liveaccess`, { headers }); const d = await res.json(); window.allServicesData = d.data.services; const sSelect = document.getElementById('serviceSelect'); sSelect.innerHTML = '<option value="">-- Service --</option>'; d.data.services.forEach(s => sSelect.innerHTML += `<option value="${s.sid}">${s.sid}</option>`); } catch(e){} }
     function loadRanges() { const sid = document.getElementById('serviceSelect').value; const s = window.allServicesData.find(x => x.sid === sid); const rSelect = document.getElementById('rangeSelect'); rSelect.innerHTML = '<option value="">-- Range --</option>'; if(s) s.ranges.forEach(r => rSelect.innerHTML += `<option value="${r}">${r}</option>`); }
     function syncRID() { document.getElementById('ridInput').value = document.getElementById('rangeSelect').value.replace('XXX',''); saveInputs(); }
     
-    // --- আপডেট করা Generate Now ফাংশন (এলার্টসহ) ---
     async function generateNow() {
         const rid = document.getElementById('ridInput').value.trim();
         if(!rid) { alert("দুঃখিত! রেঞ্জ বা RID এর ঘরটি খালি রাখা যাবে না।"); return; }
@@ -509,7 +530,6 @@
     
     function unlockAudio() { if(!audioUnlocked) { otpSound.play().then(() => { otpSound.pause(); audioUnlocked = true; }).catch(e => {}); } }
     
-    // স্মার্ট কপি ফাংশন (অটো কপির জন্য ব্যবহৃত)
     function smartCopy(t) { 
         const h = document.getElementById('copyHelper'); 
         h.value = t.toString().replace(/\s+/g, ''); 
@@ -534,7 +554,6 @@
             updateUI(); loadInputs(); renderMyNumbers();
         } else { document.getElementById('loginOverlay').style.display = 'flex'; }
         
-        // ঘড়ি আপডেট (বাংলাদেশ টাইম)
         setInterval(() => {
             const now = new Date();
             const bdTime = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Dhaka', hour12: true });
