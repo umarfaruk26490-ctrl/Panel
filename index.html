@@ -1,16 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple SMS - Worker Dashboard PRO</title>
-    <!-- Fonts & Icons -->
+    <title>Dual Panel - VOLTEX | ZENEX (BD Time 12hr)</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
@@ -25,70 +21,59 @@
             --border: #1c1c1e;
             --telegram-blue: #0088cc;
             --gold-color: #FFD700;
+            --voltex-color: #ff3b30;
+            --zenex-color: #9b59b6;
         }
-
-        body { background-color: var(--bg-black); color: var(--apple-silver); font-family: 'Inter', sans-serif; margin: 0; font-size: 0.82rem; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
-
+        body { background-color: var(--bg-black); color: var(--apple-silver); font-family: 'Inter', sans-serif; margin: 0; font-size: 0.82rem; overflow-x: hidden; }
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-black); z-index: 20000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .login-box { max-width: 380px; width: 100%; background: var(--card-dark); border: 2px solid var(--apple-red); border-radius: 25px; padding: 35px 25px; text-align: center; }
-
         .premium-header { background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px); padding: 12px 0; border-bottom: 2px solid var(--apple-red); position: sticky; top: 0; z-index: 1000; }
-        .header-flex { display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
-        
+        .header-flex { display: flex; justify-content: space-between; align-items: center; padding: 0 15px; flex-wrap: wrap; gap: 10px; }
         #liveTime { color: var(--apple-red); font-weight: 900; font-size: 0.9rem; font-family: monospace; }
         #liveDate { color: var(--text-dim); font-size: 0.65rem; font-weight: 600; display: block; margin-top: -2px; }
-
         .stats-pill { background: #111; border: 1px solid var(--border); padding: 5px 12px; border-radius: 50px; display: flex; align-items: center; gap: 8px; font-size: 0.75rem; }
         .balance-text { color: var(--gold-color) !important; font-weight: 900; }
-        .btn-withdraw { background: var(--apple-red); color: white; border: none; padding: 4px 10px; border-radius: 50px; font-size: 0.62rem; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.4s; }
-
+        .btn-withdraw { background: var(--apple-red); color: white; border: none; padding: 4px 10px; border-radius: 50px; font-size: 0.62rem; font-weight: 800; cursor: pointer; }
+        .panel-toggle { background: #1c1c1e; border-radius: 50px; padding: 3px; display: flex; gap: 5px; }
+        .panel-btn { padding: 5px 18px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; cursor: pointer; background: transparent; color: var(--text-dim); border: none; transition: 0.3s; }
+        .panel-btn.voltex-active { background: var(--voltex-color); color: white; box-shadow: 0 0 10px rgba(255,59,48,0.3); }
+        .panel-btn.zenex-active { background: var(--zenex-color); color: white; box-shadow: 0 0 10px rgba(155,89,182,0.3); }
         .content-section { display: none; padding: 20px 0; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
-
         .main-card { background: var(--card-dark); border: 1px solid var(--border); border-radius: 25px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.4s; text-decoration: none; display: block; }
         .main-card i { font-size: 3.5rem; color: var(--apple-red); margin-bottom: 20px; display: block; }
         .main-card h4 { font-size: 1rem; font-weight: 800; color: white; }
-        
         .back-btn { background: #1c1c1e; color: var(--apple-red); border: 1px solid var(--apple-red); padding: 8px 22px; border-radius: 50px; text-decoration: none; display: inline-block; margin-bottom: 20px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
-
         .custom-field { background: #111 !important; border: 1px solid #2c2c2e !important; color: white !important; border-radius: 12px; padding: 12px; margin-bottom: 10px; width: 100%; font-size: 0.85rem; }
         .btn-generate { background: var(--apple-red); color: white; font-weight: 800; padding: 16px; border-radius: 12px; width: 100%; border: none; text-transform: uppercase; }
-
         .table-container { background: var(--card-dark); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
-        .grid-row { display: grid; grid-template-columns: 130px 100px 1fr 85px; padding: 12px 15px; border-bottom: 1px solid #1a1a1a; align-items: center; gap: 10px; }
+        .grid-row { display: grid; grid-template-columns: 130px 100px 1fr 100px; padding: 12px 15px; border-bottom: 1px solid #1a1a1a; align-items: center; gap: 10px; }
         .grid-header { background: #111; font-weight: 900; color: var(--apple-red); text-transform: uppercase; font-size: 0.75rem; }
-
-        .service-badge { background: #1c1c1e; color: var(--telegram-blue); padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 800; border: 1px solid #333; text-transform: uppercase; }
-        .lang-badge { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; border: 1px solid rgba(57, 255, 20, 0.3); }
+        .service-badge { background: #1c1c1e; color: var(--telegram-blue); padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 800; border: 1px solid #333; text-transform: uppercase; display: inline-block; margin-bottom: 4px; }
+        .lang-badge { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; border: 1px solid rgba(57, 255, 20, 0.3); display: inline-block; }
         .otp-copy-btn { background: var(--neon-green); color: black; font-weight: 900; text-align: center; padding: 5px 2px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
-        
-        /* Kola Text Music Color Animation */
-        @keyframes musicColor {
-            0% { color: #ff3b30; text-shadow: 0 0 5px #ff3b30; }
-            25% { color: #39FF14; text-shadow: 0 0 5px #39FF14; }
-            50% { color: #0088cc; text-shadow: 0 0 5px #0088cc; }
-            75% { color: #FFD700; text-shadow: 0 0 5px #FFD700; }
-            100% { color: #ff3b30; text-shadow: 0 0 5px #ff3b30; }
-        }
-        .kola-text {
-            font-weight: 900;
-            animation: musicColor 2s linear infinite;
-            margin: 0 2px;
-        }
-
+        @keyframes musicColor { 0% { color: #ff3b30; } 25% { color: #39FF14; } 50% { color: #0088cc; } 75% { color: #FFD700; } 100% { color: #ff3b30; } }
+        .kola-text { font-weight: 900; animation: musicColor 2s linear infinite; margin: 0 2px; }
         .country-label { font-size: 0.72rem; color: var(--neon-green); display: block; font-weight: 700; }
         .range-sub-text { font-size: 0.68rem; color: var(--apple-red); display: block; cursor: pointer; text-decoration: underline; margin-top: 2px; font-weight: 800; }
-        .otp-time-label { font-size: 0.58rem; color: var(--text-dim); display: block; margin-top: 3px; text-align: center; font-weight: 600; font-family: monospace; }
-
+        .otp-time-label { font-size: 0.6rem; color: #FFD700; display: block; margin-top: 5px; text-align: center; font-weight: 700; font-family: monospace; background: rgba(0,0,0,0.5); padding: 3px 5px; border-radius: 5px; }
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 12px 40px; border-radius: 50px; font-weight: 900; display: none; z-index: 10000; border: 2px solid var(--apple-red); }
-        .success-modal-msg { background: #111; border: 2px solid var(--neon-green); color: white; padding: 20px; border-radius: 20px; text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 11000; display: none; animation: pop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
-
+        .success-modal-msg { background: #111; border: 2px solid var(--neon-green); color: white; padding: 20px; border-radius: 20px; text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 11000; display: none; }
         #copyHelper { position: absolute; left: -9999px; opacity: 0; }
         .modal-content { background: var(--card-dark); border: 2px solid var(--apple-red); border-radius: 25px; color: white; }
         .blink { animation: blinker 1s linear infinite; }
         @keyframes blinker { 50% { opacity: 0; } }
-
-        @media (max-width: 768px) { .grid-row { grid-template-columns: 110px 85px 1fr 70px; gap: 5px; } }
+        .panel-status { font-size: 0.6rem; padding: 2px 10px; border-radius: 20px; }
+        .panel-status.voltex { background: rgba(255,59,48,0.2); color: #ff3b30; border: 1px solid #ff3b30; }
+        .panel-status.zenex { background: rgba(155,89,182,0.2); color: #9b59b6; border: 1px solid #9b59b6; }
+        .hit-rank-card { background:#111; border-radius:15px; padding:12px; margin-bottom:10px; cursor:pointer; transition:0.3s; }
+        .hit-rank-card:hover { background:#1a1a1a; transform:translateX(5px); }
+        .rank-number { font-size:1.5rem; font-weight:900; margin-right:12px; }
+        .hit-count { font-size:0.7rem; color:var(--neon-green); }
+        .use-range-btn { background: var(--apple-red); color: white; border: none; border-radius: 20px; padding: 4px 12px; font-size: 0.7rem; font-weight: 700; }
+        .bd-time-badge { background: #1a5c2e; color: #39FF14; padding: 2px 8px; border-radius: 15px; font-size: 0.6rem; margin-left: 8px; }
+        .provider-name { font-size: 0.65rem; color: #ff9f43; display: block; margin-top: 3px; font-weight: 600; }
+        @media (max-width: 768px) { .grid-row { grid-template-columns: 100px 80px 1fr 85px; gap: 5px; } }
     </style>
 </head>
 <body onclick="unlockAudio()">
@@ -106,20 +91,26 @@
 
 <header class="premium-header">
     <div class="header-flex container">
-        <div class="d-flex align-items-center gap-1">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
             <i class="fa-brands fa-apple text-white fs-2"></i>
+            <div class="panel-toggle">
+                <button class="panel-btn" id="voltexPanelBtn" onclick="switchPanel('voltex')">🔴 VOLTEX</button>
+                <button class="panel-btn" id="zenexPanelBtn" onclick="switchPanel('zenex')">🟣 ZENEX</button>
+            </div>
             <div class="stats-pill">
                 <span>৳ <b id="balance" class="balance-text">0.00</b></span>
                 <button id="mainWithdrawBtn" class="btn-withdraw" data-bs-toggle="modal" data-bs-target="#withdrawModal" onclick="updateModalBalance()">Withdraw</button>
             </div>
-            <div class="sound-switch form-check form-switch ms-2">
+            <div class="sound-switch form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="soundToggle" checked>
                 <label class="form-check-label small text-dim" for="soundToggle">Sound</label>
             </div>
+            <div id="panelStatus" class="panel-status voltex">🔴 VOLTEX ACTIVE</div>
         </div>
         <div class="live-clock-box text-end">
-            <span id="liveTime">00:00:00 AM</span>
+            <span id="liveTime">12:00:00 AM</span>
             <span id="liveDate">-- --- ----</span>
+            <span class="bd-time-badge"><i class="fa-regular fa-clock me-1"></i>বাংলাদেশ </span>
         </div>
     </div>
 </header>
@@ -129,6 +120,7 @@
         <div class="col-12"><div class="main-card" style="border: 2px solid var(--apple-red); padding: 50px 20px;" onclick="showSection('generate-sec')"><i class="fa-solid fa-sim-card"></i><h4>RENT NUMBER & EARNINGS</h4></div></div>
         <div class="col-6"><div class="main-card" onclick="showSection('live-feed-sec')"><i class="fa-solid fa-tower-broadcast"></i><h4>LIVE FEED</h4></div></div>
         <div class="col-6"><div class="main-card" onclick="showSection('all-ranges-sec')"><i class="fa-solid fa-layer-group"></i><h4>ALL RANGES</h4></div></div>
+        <div class="col-12"><div class="main-card" onclick="showSection('top-hits-sec')"><i class="fa-solid fa-chart-line" style="color: var(--gold-color) !important"></i><h4>🏆 TOP HIT RANGES</h4></div></div>
         <div class="col-12"><a href="https://t.me/netops_academy" target="_blank" class="main-card" style="border: 2px solid var(--telegram-blue);"><i class="fa-brands fa-telegram" style="color:var(--telegram-blue) !important"></i><h4>ADMIN SUPPORT</h4></a></div>
     </div>
 </div>
@@ -141,12 +133,10 @@
                 <select id="serviceSelect" class="custom-field" onchange="loadRanges(); saveInputs();"><option value="">-- Service --</option></select>
                 <select id="rangeSelect" class="custom-field" onchange="syncRID(); saveInputs();"><option value="">-- Choose Range --</option></select>
                 <input type="text" id="ridInput" class="custom-field" placeholder="Manual RID Entry" oninput="saveInputs()">
-                
                 <div class="d-flex flex-wrap gap-3 mb-3 mt-1">
                     <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="noPlusToggle" onchange="renderMyNumbers(); saveInputs();"><label class="form-check-label small fw-bold text-white">No Plus (+)</label></div>
                     <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="noCountryCodeToggle" onchange="renderMyNumbers(); saveInputs();"><label class="form-check-label small fw-bold text-white">No Code</label></div>
                 </div>
-
                 <button onclick="generateNow()" id="genBtn" class="btn-generate">Generate Now</button>
                 <h6 class="mt-4 text-dim border-bottom pb-1" style="font-size: 0.7rem;">MY ACTIVE NUMBERS (AUTO COPY)</h6>
                 <div id="myRequestsList"></div>
@@ -154,7 +144,7 @@
         </div>
         <div class="col-lg-8">
             <div class="table-container">
-                <div class="grid-header grid-row"><div>Number</div><div>Service / Lang</div><div>Message</div><div>OTP</div></div>
+                <div class="grid-header grid-row"><div>Number</div><div>Service / Lang</div><div>Message</div><div>OTP / Time</div></div>
                 <div id="otpHistoryBody" style="min-height: 400px;"></div>
             </div>
         </div>
@@ -178,6 +168,18 @@
 <div class="container content-section" id="sub-range-sec">
     <a href="javascript:void(0)" class="back-btn" onclick="showSection('all-ranges-sec')"><i class="fa-solid fa-chevron-left me-1"></i> Back</a>
     <div id="sub-range-grid" class="row g-2"></div>
+</div>
+
+<div class="container content-section" id="top-hits-sec">
+    <a href="javascript:void(0)" class="back-btn" onclick="showHome()"><i class="fa-solid fa-chevron-left me-1"></i> Dashboard</a>
+    <div class="main-card text-start" style="padding: 20px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="text-danger fw-bold mb-0"><i class="fa-solid fa-fire-flame-curved me-2"></i> TOP HIT RANGES</h5>
+            <button class="btn-withdraw" onclick="fetchTopHitRanges()" style="padding: 5px 15px;"><i class="fa-solid fa-rotate-right me-1"></i> Refresh</button>
+        </div>
+        <p class="small text-dim mb-3">সর্বাধিক সফল OTP প্রাপ্ত রেঞ্জগুলো — ক্লিক করে সরাসরি ইউজ করুন</p>
+        <div id="topHitsList" style="max-height: 500px; overflow-y: auto;"></div>
+    </div>
 </div>
 
 <div class="modal fade" id="withdrawModal" tabindex="-1">
@@ -206,38 +208,252 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const successMessages = ["ওটিপি এনে তো পুরাই কাপায় দিলা মামা! জিন্দাবাদ!", "ভাইরে ভাই, তুমি তো পুরাই সিস্টেম হ্যাক করলা!", "এই ক্রিয়েটিভিটি দেখার জন্যই তো বসে ছিলাম! দারুণ কাজ!", "ওটিপিও আসল, আর তোমার ডলারের লাইনও ক্লিয়ার হলো!", "কাজটা তো একদম পানির মতো সহজ করে ফেললা ভাই!", "সাব্বাস! তোমার মেথড দেখে তো এডমিন খুশিতে নাচতেছে!", "ওটিপির স্পিড তো বুলেটের চেয়েও ফাস্ট! পকেট ভরার জন্য রেডি হও।", "তোমার আইকিউ তো দেখি রকেটের গতিতে চলে!", "ওটিপি এনে প্রমাণ করলা যে তোমার মগজটা আসলেই আপডেটেড!", "কাজ তো তুমি একাই একশ! এবার ব্যালেন্স চেক করো মামা।", "এই ওটিপি দেখার পর তো আমার চোখে আনন্দের জল চলে আসল!", "লজিক তো পুরোই ১০০ তে ১০০! চমৎকার কাজ ভাই।", "মেথড পুরোই সাকসেসফুল! কাজটা ঠিকঠাক করার জন্য এক কাপ চা পাওনা রইল", "ওটিপি আনছ নাকি জাদু করছ? ডলার তো এখন তোমার পকেটে আসার জন্য কান্নাকাটি করতেছে!", "কড়া মেথড, কড়া কাজ! অনলাইন জগত তো তোমার জন্যই ভাই!", "ওটিপি আনার ওস্তাদ তুমি, তোমার কাজে কোনো ভুল নাই!", "এক ক্লিকেই ওটিপি হাজির! তোমার হাতের জাদু তো দারুণ ভাই!", "মেথড যখন একদম পারফেক্ট, ওটিপি তখন বাধ্য ছেলের মতো চলে আসে!", "ওটিপি আনার স্পিড দেখে সার্ভারও সালাম ঠুকছে মামা!", "দারুণ গতি, দারুণ কাজ! আজকের দিনের সেরা পারফরম্যান্স তোমার!", "ওটিপি আনা তো তোমার কাছে ডাল-ভাত! তুমিই আসল বস!", "এই তো বাঘের মতো কাজ! ওটিপি এনে তাক লাগিয়ে দিলে!", "কাজের কোয়ালিটি একেই বলে! ওটিপি সাকসেসফুল ভাই!", "ওটিপিও ডান, ডলারও কনফার্ম! এবার শুধু এগিয়ে যাওয়ার পালা!", "মেথডের রাজা তুমি, ওটিপি মিস হওয়ার কোনো সুযোগই নাই!", "তোমার মতো এক্সপার্ট থাকলে এডমিনের টেনশন জিরো পারসেন্ট!", "ওটিপিটা এনে মনটা একদম জুড়িয়ে দিলা মামা! জাস্ট ফাটাফাটি!", "বাটন চাপলা আর ওটিপি চলে আসল, একেই বলে আসল ট্যালেন্ট!", "নিখুঁত মেথড, নির্ভুল কাজ! তোমার তুলনা তুমি নিজেই ভাই!", "ওটিপি আনার মিশনে তুমি १०० তে १०० পাস! সাব্বাস!", "তোমার আইকিউ লেভেল দেখে আইন্সটাইনও হিংসা করত ভাই!", "ওটিপি তো আসলোই, সাথে বোনাস হিসেবে এডমিনের ভালোবাসাও নিয়ে গেলা!", "কাজে কোনো ফাঁকিবাজি নাই, ওটিপি এনে প্রমাণ করে দিলা!", "তুমি তো ওটিপি আনার মেশিন ভাই! জাস্ট আনস্টপেবল!", "এই ওটিপি দেখার পর মনের ভেতর কোকিল ডেকে উঠল মামা!", "মেথডের পাওয়ার আর তোমার ব্রেনের জোর, ওটিপি আসতে বাধ্য!", "অবশ্যই। নিচে ঠিক আপনার দেওয়া ফরম্যাটে — কমা, উদ্ধৃতি, লাইন ব্রেক, এবং প্রতিটি লাইনের ধারাবাহিকতা রেখে — হুবহু বাংলা অনুবাদ দেওয়া হলো","লাইন যখন প্রো-প্লেয়ার থাকে, ওটিপি নিজেই চলে আসে!", "ওটিপি এক্সপিরিয়েন্স নিয়ে আসা তোমাকে একদিন অনেক দূরে নিয়ে যাবে!", "এক শটে ওটিপি ক্লিয়ার! সত্যিই কাজ করছ কাজী মামা!", "ওটিপি সাকসেস! তোমার ফোকাস দেখে সত্যিই আমি ইম্প্রেসড!", "তুমিই অনলাইন ওয়ার্কের আসল হিরো ভাই! ওটিপি এনে দেখিয়ে দিলে!", "তোমার মেথডের স্পিড দেখে সার্ভার ফ্রিজ হয়ে গেল! জটিল কাজ!", "ওটিপি এনে পুরো ড্যাশবোর্ডে আগুন লাগিয়ে দিলে মামা!", "কাজে যদি এই ডেডিকেশন থাকে, তাহলে সাকসেস তোমার পায়ে চুমু খাবে!", "ওটিপি পারফেক্ট টাইমে এসেছে, তোমার টাইমিংয়ের প্রশংসা করতে হবে!", "এই কাজ এত সুন্দরভাবে হচ্ছে কারণ তুমি আছো! থ্যাঙ্কস ভাই!", "ওটিপি সাকসেসফুল! তোমার মেথড ডায়েরিতে লেখার মতো!", "এত কম সময়ে এত পারফেক্ট ওয়ার্ক? তুমি সত্যিই জিনিয়াস মামা!", "ওটিপি এসে গেছে, এখন ডলার পকেটে ঢোকার অপেক্ষা!", "সব ভালো যার শেষ ভালো! ওটিপি হয়ে গেছে, তুমি বেস্ট!", "তুমি যখন ওটিপি আনো, তখন মনে হয় ঈদের চাঁদ উঠেছে!", "এমন স্পিডে ওটিপি এনেছো যে গুগলও কনফিউজ হয়ে গেছে!", "ওয়েল ডান বয়! তোমার মেথড টোটালি ইন্টারন্যাশনাল লেভেল!", "ওটিপি সাবমিশন স্টাইল ছিল টোটালি রয়্যাল ভাই!", "তুমি কাজের উস্তাদ ভাই, তোমার ইশারায় ওটিপি নাচে!", "নাম্বারই দিইনি এখনো, ওটিপি চলে এলো! এটা প্রো লেভেল স্পিড!", "তোমার কাজের স্পিড দেখে নেটওয়ার্কের ৫জিও লজ্জা পেয়ে গেছে!", "মেথড অনেকেই জানে, কিন্তু ওটিপি আনার আসল কারিগর তুমি!", "ওটিপি এসে বলল: 'বস আমি চলে এসেছি, পেমেন্ট রেডিও করো!'", "এই কাজের জন্য তুমি মেডেল পাওয়ার যোগ্য মামা!", "তোমার মেথড দেখে অন্য ইউজারদের চোখ বড় বড় হয়ে যাচ্ছে!", "ওটিপি না, রকেট বুস্টার! কাজ মুহূর্তে শেষ!", "তুমি এলে ড্যাশবোর্ডে শুধু সাকসেস আর সাকসেস দেখা যায়!", "ওটিপি আনার জন্য আজকের রিওয়ার্ড হলো আন্তরিক ধন্যবাদ অ্যাডমিনের পক্ষ থেকে!", "ওটিপির কোনো কথাই নেই, তুমি টোটালি ফায়ার ভাই!", "যা সবাই পারে না, তুমি এক সেকেন্ডে করে ফেলো!", "ওটিপি হয়ে গেছে! তোমার ধৈর্য আর মেথড সত্যিই প্রশংসনীয় ভাই!", "ওটিপি কোথায় যাবে তোমার টাচ ছাড়া মামা!", "কাজের কোয়ালিটি দেখে মন তাজা হয়ে গেল!", "ওটিপি আনার এই পারফেক্ট স্কিল সত্যিই এক্সট্রাঅর্ডিনারি!", "তুমি সত্যিই কাজের রত্ন, ওটিপি এনে প্রজেক্ট বাঁচিয়ে দিলে!", "উইথড্র করা তোমার হক ভাই, কাজ যেমন স্পিড তেমন!", "ওটিপি এসে গেছে, এখন আরাম কর মামা!", "তোমার মতো ডেডিকেটেড ইউজার পাওয়া ভাগ্যের ব্যাপার!", "ওটিপি আসে তুমি নাম্বার দাও, তুমি কি তোমার ম্যাজিক বলবে ভাই?", "ওটিপি সাকসেস! এখন অ্যাকাউন্ট ব্যালেন্স বাড়বে রাজকীয় স্পিডে!", "তোমার ফোকাস আর কাজের মেথড দুটোই জাস্ট আউটস্ট্যান্ডিং!", "ওটিপি আনার এই খেলা তোমার হাতের মুঠোয় ভাই!", "খাঁটি কাজের খাঁটি মেথড, ওটিপি এনে দিলে ব্লাস্ট!", "তুমি আজকের সেরা ওটিপি মাস্টার ঘোষণা করা হলো!", "ওটিপি এসে গেছে, পেমেন্টের পথ একদম ক্লিয়ার!", "তুমি ওটিপি আনলে প্যানেলের প্রফিট গ্রাফ লাফিয়ে ওঠে!", "তুমি কাজের উস্তাদ, তোমার মেথড সর্বদা এভারগ্রিন!", "ওটিপি হয়ে গেছে! এখন একটা কাপ কফি peacefully খাও ভাই!", "তুমি ওটিপি আনার ট্রাফিক পুলিশ ভাই, সব জ্যাম ক্লিয়ার করে দাও!", "একের পর এক ওটিপি এনে দিচ্ছ, সার্ভার আনন্দে চির্চির করছে!", "পারফেক্ট টাইমিং আর পারফেক্ট মেথডের জুটি পাওয়া দুষ্কর!", "ওটিপি সাকসেস! তোমার কাজের স্টাইল জাস্ট লা-জওয়াব মামা!", "কাজের প্রতি এত ভালোবাসা থাকলে অনলাইন দুনিয়া তোমার হাতে!", "ওটিপি এসে প্যানেলকে বরকত দিলে, থ্যাঙ্কস ভাই!", "তোমার মতো ট্যালেন্টেড ছেলেরা এই লাইনের গর্ব!", "ওটিপি হয়ে গেছে! অ্যাডমিন এখন তোমার পেমেন্ট প্রসেস করতে ব্যস্ত!", "তুমি জটিল মেথডগুলোকে পানির মতো সহজ করে দেখাও মামা!", "ওটিপি এসে গেছে, মিশন সাকসেসফুল! তুমি বস!", "এই কাজের জন্য শতভাগ নম্বর ভাই!", "ওটিপি এসে গেছে, এখন পকেটে ডলারের ঝনঝনানি শুরু হোক!", "তোমার কাজের স্পিড দেখে অ্যাডমিনের চোখে আনন্দের জল!", "ওটিপি স্কিল দেখে মনে হয় এই লাইনে তোমার পিএইচডি আছে!", "আজ ওটিপি এনে পুরো ড্যাশবোর্ড নেড়ে দিলে মামা!", "টোটালি ফিনিশড! ওটিপি সাকসেসফুল, তুমি আসল হিরো!"];
+    // ======================== BANGLADESH TIME 12-HOUR FORMAT ========================
+    function getBangladeshTime12Hour() {
+        const now = new Date();
+        const bdTime = new Date(now.getTime() + (6 * 60 * 60 * 1000));
+        let hours = bdTime.getUTCHours();
+        const minutes = bdTime.getUTCMinutes().toString().padStart(2, '0');
+        const seconds = bdTime.getUTCSeconds().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const hoursStr = hours.toString().padStart(2, '0');
+        return `${hoursStr}:${minutes}:${seconds} ${ampm}`;
+    }
     
-    const failMessages = ["ওটিপি আনতে হলে হরলিক্স খাও!", "টেল মেখে একাউন্ট খোলো!", "ওটিপি কি জ্যামে আটকেছে মামা?", "ওটিপি যেন আকাশের চাঁদ, দেখাই মেলে না!", "ভুল ওটিপি দিয়া সার্ভার গরম কইরো না!", "ওটিপির স্পিড কচ্ছপের চেয়েও স্লো!", "ওটিপি কি শ্বশুরবাড়ি বেড়াতে গেছে?", "ওটিপি আসে না, অথচ টাকার লোভ ষোলোআনা!", "ওটিপির বক্সে কি তোমার নাম লিখতে বলছিলাম?", "ওটিপিটা কি তোমার নানার বাড়ির আবদার?", "ওটিপি আনতে গিয়ে কি সর্ষে ফুল দেখলা?", "ওটিপি তো না, যেন সোনার হরিণ!", "ভুল নিয়মে কাজ করার বিশ্বরেকর্ড তোমারই হবে!", "ওটিপি নাই, ডায়ালগ বেশি তোমার!", "ওটিপি আনতে এসে কি মেথড ভুলে গেলা?", "আগে ওটিপি আনো, তারপর ডলার খোঁজো!", "ওটিপি আনছ নাকি কৌতুক লিখছ?", "এই ওটিপি দেখতে হলে কলিজা লাগে ভাই!", "মেথড কোথায় রাজার মামা?", "তোমার দ্বারা কিচ্ছু হবে না!", "চিপসের প্যাকেটে হাওয়া ভরো গে!", "জ্ঞানের দোকান বন্ধ কেন আজ?", "লজিক তো পুরোই কোমায় গেছে!", "ওটিপি আনার নামে চাটনি বানাইলা মিয়া!", "এই মেথড তো ডাইনোসর আমলের!", "কাজ করছ নাকি মশার কয়েল জ্বালছ?", "এত ভুল মেথড কোত্থেকে আবিষ্কার করলা?", "তোমার মেথড দেখে এডমিন অজ্ঞান!", "ভাইরে ভাই, কাজটা তো অন্তত ঠিক করো!", "কাজের নামে আলু ভর্তা বানায় দিলা!", "এত ক্রিয়েটিভ ভুল কেমনে করো ভাই?", "মেথড চেঞ্জ করো, নাহলে বাঁশ রেডি!", "কাজটা তো একদম পানির মতো নষ্ট করলা!", "এই মেথড দিয়ে তো ভিক্ষাও মিলবে না!", "একটু ভালো মেথড কি মাথায় আসে না?", "কাজ করছ নাকি ইয়ার্কি মারছ আমাদের সাথে?", "এই মেথড দিয়ে তো ইঁদুরও ধরা পড়বে না!", "ভুল করার তো একটা লিমিট থাকে মামা!", "কাজ ডাস্টবিনে ফেলে দিয়েছ মামা!", "তোমার মেথড পুরোই ব্যাকডেটেড!", "কাজটা তো উল্টো গিয়ার চলে!", "মেথডের নামে এইটা কি ললিপপ দিলা?", "পুরো মেথডটাই তো গিলে খেয়েছ ভাই!", "তোমার এই মেথড মঙ্গোলিয়াতেও চলবে না!", "ব্যাকডেটেড ব্রেন নিয়া আপডেটেড ভাব?", "ব্রেনটা কি ফ্রিজে রেখে এসেছ ভাই?", "ওটিপি দেওয়ার বুদ্ধি কি চিপসের প্যাকেটে?", "মগজটা একটু রিভুট মেরে আসো তো!", "এত কম বুদ্ধি নিয়ে এই লাইনে কে আনল?", "বুদ্ধির কোটা কি তোমার জিরো ভাই?", "ব্রেন সেল মনে হয় সব বিক্রি করে দিছ!", "তোমার মাথায় বুদ্ধি নাকি সর্ষে দানা?", "লজিকের তো পুরা দাফন কাফন করে দিলা!", "মাথা ঠান্ডা করো, ব্রেনে একটু জল ঢালো!", "তোমার আইকিউ তো মাইনাসে চলে গেছে!", "ব্রেনের মেমোরি কার্ডটা একটু ফরম্যাট করো!", "জ্ঞানের দোকানটা তালা মেরে দাও ভাই!", "সস্তা নেশার জোর নাকি এত ভুল কাজের?", "মেমোরি ফুল, কিন্তু ব্রেন একদম ফাঁকা!", "চিন্তা তোমার পুরোই উল্টো গিয়ার চলে!", "মাথার ভেতর কি মশার কয়েল জ্বলছে?", "তোমার ব্রেন তো পুরোই নো-সার্ভিস এরিয়া!", "আইকিউ টেস্ট করলে তো ডাক্তারও পালাবে!", "মাথার ছাদ ফাঁকা, মুখে বড় কথা!", "তোমার মাথা তো পুরোই ফাঁকা বালতি!", "এই বুদ্ধি দিয়ে টাকা তুলবা মামা?", "ভবিষ্যৎ পুরোই আন্ধার দেখতেছি তোমার!", "এত তাড়াহুড়ো? একটু তেল মাখো পায়ে!", "ব্যালেন্স নাই, উইথড্র দেওয়ার ভাব আছে!", "ফাঁকা একাউন্ট নিয়ে উইথড্র মারতে আসছ?", "কাজ নাই, খালি টাকা তোলার ধান্দা!", "আগে কাজ শিখো, তারপর পকেট ভরো!", "টাকা কি আকাশ থেকে পড়বে মামা?", "ভুল কাজ করে পেমেন্ট আশা করা পাপ!", "পেমেন্ট মেথড দিছ নাকি ধাঁধা বানাইছ?", "এক টাকাও ইনকাম নাই, উইথড্রর লাইন সবার আগে!", "এই কাজের জন্য তো জরিমানা হওয়া দরকার!", "টাকা তোলার আগে কাজটা তো ঠিক করো ভাই!", "উইথড্র দিয়ে কি বিরিয়ানি খাবা মামা?", "ভুল কাজ সাবমিট করে ডলারের স্বপ্ন?", "পকেটে নাই আনা, উইথড্র দিতে চায় ষোলোআনা!", "টাকা কি গাছে ধরে যে ভুল কাজেও পেমেন্ট দিমু?", "আগে ওটিপির মেথড শেখো, তারপর ক্যাশআউট করো!", "ব্যালেন্স জিরো, তাও বাটনে চাপাচাপি বন্ধ নাই!", "অনলাইন জগত তোমার জন্য না ভাই, মাঠে যাও!", "তুমি বরং চিপসের প্যাকেটে হাওয়া ভরার ফ্যাক্টরিতে যাও!", "ভাই, তুমি একটু চা খেয়ে মাথা ঠান্ডা করো!", "তুমি কি আসলেই মানুষ নাকি কোনো রোবট?", "এই কাজ দেখার পর আমার চোখ ধুয়ে আসতে হবে!", "ওটিপি আনার নাম করে কি ঘুমাচ্ছো নাকি মামা?", "তোমার এই ওটিপি না আনার মেথড দেখে তো ছাগলও হাসবে!", "ওটিপি তো আসলোই না, উল্টো সার্ভার নিজের মাথায় হাত দিয়ে বসে আছে!", "ভাইরে ভাই, ওটিপি সাবমিট করতে বলছি, কোনো মহাকাব্য লিখতে বলি নাই!", "তোমার ওটিপির স্পিড দেখে মনে হচ্ছে ওটা হেঁটে হেঁটে আমেরিকা থেকে আসছে!", "কাজটা তো একদম গুড় দিয়ে গোবর করে দিলা!", "ওটিপি আনতে গিয়ে কি বাটন চাপার শক্তিও হারিয়ে ফেললা ভাই?", "এত ফালতু কাজ করলে তো কোম্পানি দেউলিয়া হয়ে যাবে!", "ওটিপি নাই, কাজের ঠিক নাই—কিন্তু পেমেন্টের সময় সবার আগে হাত পাতা রেডি!", "তোমার মগজে কি ওটিপির বদলে শুধুই ফাঁকা হাওয়া ভরা?", "ওটিপি তো দূরে থাক, তুমি তো নাম্বারের শেষ দুইটা ডিজিটও মিলাতে পারো নাই!", "তোমার কাজের বহর দেখে মনে হচ্ছে তুমি ওটিপি না, ডাইনোসরের ডিম খুঁজতে গেছ!", "এই ওটিপি আনার স্কিল নিয়ে অনলাইন জগতে আসা আর মরুভূমিতে সাতার কাটা একই কথা!"];
-
+    function getBangladeshDateString() {
+        const now = new Date();
+        const bdTime = new Date(now.getTime() + (6 * 60 * 60 * 1000));
+        const days = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+        const months = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+        const dayName = days[bdTime.getUTCDay()];
+        const date = bdTime.getUTCDate();
+        const month = months[bdTime.getUTCMonth()];
+        const year = bdTime.getUTCFullYear();
+        return `${dayName}, ${date} ${month} ${year}`;
+    }
+    
+    function getFormattedTimeForOTP() {
+        const now = new Date();
+        const bdTime = new Date(now.getTime() + (6 * 60 * 60 * 1000));
+        let hours = bdTime.getUTCHours();
+        const minutes = bdTime.getUTCMinutes().toString().padStart(2, '0');
+        const seconds = bdTime.getUTCSeconds().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const hoursStr = hours.toString().padStart(2, '0');
+        return `${hoursStr}:${minutes}:${seconds} ${ampm}`;
+    }
+    
+    // ======================== ADVANCED LANGUAGE & PROVIDER DETECTION ========================
+    function detectLanguageAdvanced(text) {
+        if (!text) return "Unknown";
+        const t = text.toLowerCase();
+        
+        // Bengali
+        if (/[\u0980-\u09FF]/.test(text)) return "Bengali (বাংলা)";
+        
+        // Hindi / Devanagari
+        if (/[\u0900-\u097F]/.test(text)) {
+            if (t.includes("नेपाली")) return "Nepali (नेपाली)";
+            if (t.includes("मराठी")) return "Marathi (मराठी)";
+            if (t.includes("ગુજરાતી")) return "Gujarati (ગુજરાતી)";
+            return "Hindi (हिन्दी)";
+        }
+        
+        // Tamil
+        if (/[\u0B80-\u0BFF]/.test(text)) return "Tamil (தமிழ்)";
+        
+        // Telugu
+        if (/[\u0C00-\u0C7F]/.test(text)) return "Telugu (తెలుగు)";
+        
+        // Malayalam
+        if (/[\u0D00-\u0D7F]/.test(text)) return "Malayalam (മലയാളം)";
+        
+        // Kannada
+        if (/[\u0CB0-\u0CFF]/.test(text)) return "Kannada (ಕನ್ನಡ)";
+        
+        // Arabic / Urdu / Persian
+        if (/[\u0600-\u06FF]/.test(text)) {
+            if (t.includes("اردو")) return "Urdu (اردو)";
+            if (t.includes("فارسی")) return "Persian (فارسی)";
+            return "Arabic (العربية)";
+        }
+        
+        // Russian / Cyrillic
+        if (/[\u0400-\u04FF]/.test(text)) {
+            if (t.includes("українська")) return "Ukrainian (Українська)";
+            if (t.includes("български")) return "Bulgarian (Български)";
+            return "Russian (Русский)";
+        }
+        
+        // Chinese
+        if (/[\u4E00-\u9FFF]/.test(text)) return "Chinese (中文)";
+        
+        // Japanese
+        if (/[\u3040-\u309F\u30A0-\u30FF]/.test(text)) return "Japanese (日本語)";
+        
+        // Korean
+        if (/[\uAC00-\uD7AF]/.test(text)) return "Korean (한국어)";
+        
+        // Thai
+        if (/[\u0E00-\u0E7F]/.test(text)) return "Thai (ไทย)";
+        
+        // European languages detection
+        if (t.includes("código")) {
+            if (t.includes("seu") || t.includes("é")) return "Portuguese (Português)";
+            return "Spanish (Español)";
+        }
+        if (t.includes("votre code")) return "French (Français)";
+        if (t.includes("dein code") || t.includes("ihr code")) return "German (Deutsch)";
+        if (t.includes("codice")) return "Italian (Italiano)";
+        if (t.includes("onay kodu")) return "Turkish (Türkçe)";
+        if (t.includes("kode anda") || t.includes("adalah")) return "Indonesian/Malay";
+        if (t.includes("mã xác minh")) return "Vietnamese (Tiếng Việt)";
+        if (t.includes("iyong code")) return "Filipino (Tagalog)";
+        if (t.includes("twój kod")) return "Polish (Polski)";
+        if (t.includes("codul tău")) return "Romanian (Română)";
+        if (t.includes("uw code")) return "Dutch (Nederlands)";
+        if (t.includes("ellenőrző kód")) return "Hungarian (Magyar)";
+        if (t.includes("vahvistuskoodi")) return "Finnish (Suomi)";
+        
+        // Default to English if contains latin characters
+        if (/[a-zA-Z]/.test(t)) return "English (US/UK)";
+        
+        return "Global 🌐";
+    }
+    
+    function detectProviderAdvanced(text) {
+        if (!text) return "SMS Service";
+        const t = text.toUpperCase();
+        
+        // Social Media
+        if (t.includes("FACEBOOK") || t.includes("FB") || t.includes("META")) return "FACEBOOK";
+        if (t.includes("INSTAGRAM") || t.includes("IG")) return "INSTAGRAM";
+        if (t.includes("WHATSAPP") || t.includes("WA")) return "WHATSAPP";
+        if (t.includes("TELEGRAM") || t.includes("TG")) return "TELEGRAM";
+        if (t.includes("TIKTOK")) return "TIKTOK";
+        if (t.includes("SNAPCHAT")) return "SNAPCHAT";
+        if (t.includes("TWITTER") || t.includes("X.COM")) return "TWITTER/X";
+        if (t.includes("LINKEDIN")) return "LINKEDIN";
+        if (t.includes("DISCORD")) return "DISCORD";
+        if (t.includes("REDDIT")) return "REDDIT";
+        
+        // Google Services
+        if (t.includes("GOOGLE") || t.includes("G-") || t.includes("GMAIL")) return "GOOGLE";
+        if (t.includes("YOUTUBE")) return "YOUTUBE";
+        
+        // Microsoft
+        if (t.includes("MICROSOFT") || t.includes("OUTLOOK") || t.includes("HOTMAIL") || t.includes("LIVE.COM")) return "MICROSOFT";
+        if (t.includes("TEAMS")) return "MICROSOFT TEAMS";
+        
+        // Apple
+        if (t.includes("APPLE") || t.includes("ICLOUD") || t.includes("APP STORE")) return "APPLE";
+        
+        // Payment & Finance
+        if (t.includes("PAYPAL")) return "PAYPAL";
+        if (t.includes("STRIPE")) return "STRIPE";
+        if (t.includes("BANK") || t.includes("TRANSFER") || t.includes("PAYMENT")) return "BANKING";
+        if (t.includes("BKASH") || t.includes("NAGAD") || t.includes("ROCKET")) return "BD PAYMENT";
+        
+        // E-commerce
+        if (t.includes("AMAZON")) return "AMAZON";
+        if (t.includes("EBAY")) return "EBAY";
+        if (t.includes("ALIEXPRESS") || t.includes("ALIBABA")) return "ALIBABA";
+        if (t.includes("SHOPIFY")) return "SHOPIFY";
+        
+        // Streaming
+        if (t.includes("NETFLIX")) return "NETFLIX";
+        if (t.includes("SPOTIFY")) return "SPOTIFY";
+        if (t.includes("DISNEY")) return "DISNEY+";
+        if (t.includes("PRIME VIDEO")) return "AMAZON PRIME";
+        
+        // Gaming
+        if (t.includes("STEAM")) return "STEAM";
+        if (t.includes("PLAYSTATION") || t.includes("PSN")) return "PLAYSTATION";
+        if (t.includes("XBOX") || t.includes("MICROSOFT")) return "XBOX";
+        if (t.includes("EPIC GAMES")) return "EPIC GAMES";
+        if (t.includes("DISCORD")) return "DISCORD";
+        
+        // Crypto
+        if (t.includes("BINANCE")) return "BINANCE";
+        if (t.includes("COINBASE")) return "COINBASE";
+        if (t.includes("CRYPTO")) return "CRYPTO";
+        if (t.includes("USDT") || t.includes("BTC") || t.includes("ETH")) return "CRYPTO";
+        
+        // Dating
+        if (t.includes("TINDER")) return "TINDER";
+        if (t.includes("BUMBLE")) return "BUMBLE";
+        
+        // Other
+        if (t.includes("UBER")) return "UBER";
+        if (t.includes("ZOOM")) return "ZOOM";
+        
+        return "SMS Service";
+    }
+    
+    // ======================== PANEL CONFIGURATIONS ========================
+    const VOLTEX_CONFIG = {
+        name: 'VOLTEX',
+        BASE_URL: 'https://api.2oo9.cloud/MXS47FLFX0U/tnevs/@public/api',
+        API_KEY: 'MUMI9UKNU7U',
+        headerKey: 'mauthapi',
+        getnumBody: (rid) => ({ rid }),
+        successOtpEndpoint: '/success-otp',
+        consoleEndpoint: '/console',
+        liveaccessEndpoint: '/liveaccess',
+        otpIdField: 'otp_id',
+        numberField: 'number',
+        messageField: 'message'
+    };
+    
+    const ZENEX_CONFIG = {
+        name: 'ZENEX',
+        BASE_URL: 'https://api.zenexnetwork.com/v1',
+        API_KEY: 'ZNX_A6SH749H3C8MQ88M3X85N7YE',
+        headerKey: 'mapikey',
+        getnumBody: (rid) => ({ range: rid + "XXX", is_national: false, remove_plus: false }),
+        successOtpEndpoint: '/numsuccess/info',
+        consoleEndpoint: '/active-ranges',
+        liveaccessEndpoint: '/active-ranges',
+        otpIdField: 'nid',
+        numberField: 'number',
+        messageField: 'otp'
+    };
+    
     const firebaseConfig = {
-      apiKey: "AIzaSyBmbVAAxDsE7epzDOC8QmM9fBSYZPIBzKQ",
-      authDomain: "number-panel-abce6.firebaseapp.com",
-      projectId: "number-panel-abce6",
-      storageBucket: "number-panel-abce6.firebasestorage.app",
-      messagingSenderId: "574184870814",
-      appId: "1:574184870814:web:0903447cdafb7bbec4bc8f",
-      measurementId: "G-HFKLDBXY2K"
+        apiKey: "AIzaSyBmbVAAxDsE7epzDOC8QmM9fBSYZPIBzKQ",
+        authDomain: "number-panel-abce6.firebaseapp.com",
+        projectId: "number-panel-abce6",
+        storageBucket: "number-panel-abce6.firebasestorage.app",
+        messagingSenderId: "574184870814",
+        appId: "1:574184870814:web:0903447cdafb7bbec4bc8f"
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-
-    const API_KEY = 'MUMI9UKNU7U'; 
-    const BASE_URL = 'https://api.2oo9.cloud/MXS47FLFX0U/tnevs/@public/api';
-    const headers = { 'mauthapi': API_KEY, 'Content-Type': 'application/json' };
+    
     const BOT_TOKEN = '8844830065:AAE2FBWW6kS1GjKMFFZ93yDydgOYFBrJGA0';
     const CHAT_ID = '8143266253';
-
+    
+    // ======================== GLOBAL VARIABLES ========================
+    let currentPanel = 'voltex';
+    let currentConfig = VOLTEX_CONFIG;
     let myWorkerID = localStorage.getItem('worker_id') || null;
     let currentBalance = 0;
     let myRequests = JSON.parse(localStorage.getItem('apple_reqs') || '[]');
     let liveTimer, liveHitsData = [];
     const otpSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
     let audioUnlocked = false;
-    const otpArrivalTimes = {};
-
-    // সকল দেশের ডেটা (ফোন কোড + ইমোজি + দেশের নাম)
-const countryData = {
+    let otpArrivalTimes = {};
+    let allServicesData = [];
+    let globalOtpsStore = []; // Store all OTPs globally
+    
+    const successMessages = ["ওটিপি এনে তো পুরাই কাপায় দিলা মামা! জিন্দাবাদ!", "ভাইরে ভাই, তুমি তো পুরাই সিস্টেম হ্যাক করলা!", "এই ক্রিয়েটিভিটি দেখার জন্যই তো বসে ছিলাম! দারুণ কাজ!", "ওটিপিও আসল, আর তোমার ডলারের লাইনও ক্লিয়ার হলো!", "কাজটা তো একদম পানির মতো সহজ করে ফেললা ভাই!", "সাব্বাস! তোমার মেথড দেখে তো এডমিন খুশিতে নাচতেছে!", "ওটিপির স্পিড তো বুলেটের চেয়েও ফাস্ট! পকেট ভরার জন্য রেডি হও।", "তোমার আইকিউ তো দেখি রকেটের গতিতে চলে!", "ওটিপি এনে প্রমাণ করলা যে তোমার মগজটা আসলেই আপডেটেড!", "কাজ তো তুমি একাই একশ! এবার ব্যালেন্স চেক করো মামা।", "এই ওটিপি দেখার পর তো আমার চোখে আনন্দের জল চলে আসল!", "লজিক তো পুরোই ১০০ তে ১০০! চমৎকার কাজ ভাই।", "মেথড পুরোই সাকসেসফুল! কাজটা ঠিকঠাক করার জন্য এক কাপ চা পাওনা রইল", "ওটিপি আনছ নাকি জাদু করছ? ডলার তো এখন তোমার পকেটে আসার জন্য কান্নাকাটি করতেছে!", "কড়া মেথড, কড়া কাজ! অনলাইন জগত তো তোমার জন্যই ভাই!", "ওটিপি আনার ওস্তাদ তুমি, তোমার কাজে কোনো ভুল নাই!", "এক ক্লিকেই ওটিপি হাজির! তোমার হাতের জাদু তো দারুণ ভাই!", "মেথড যখন একদম পারফেক্ট, ওটিপি তখন বাধ্য ছেলের মতো চলে আসে!", "ওটিপি আনার স্পিড দেখে সার্ভারও সালাম ঠুকছে মামা!", "দারুণ গতি, দারুণ কাজ! আজকের দিনের সেরা পারফরম্যান্স তোমার!", "ওটিপি আনা তো তোমার কাছে ডাল-ভাত! তুমিই আসল বস!", "এই তো বাঘের মতো কাজ! ওটিপি এনে তাক লাগিয়ে দিলে!", "কাজের কোয়ালিটি একেই বলে! ওটিপি সাকসেসফুল ভাই!", "ওটিপিও ডান, ডলারও কনফার্ম! এবার শুধু এগিয়ে যাওয়ার পালা!", "মেথডের রাজা তুমি, ওটিপি মিস হওয়ার কোনো সুযোগই নাই!", "তোমার মতো এক্সপার্ট থাকলে এডমিনের টেনশন জিরো পারসেন্ট!", "ওটিপিটা এনে মনটা একদম জুড়িয়ে দিলা মামা! জাস্ট ফাটাফাটি!", "বাটন চাপলা আর ওটিপি চলে আসল, একেই বলে আসল ট্যালেন্ট!", "নিখুঁত মেথড, নির্ভুল কাজ! তোমার তুলনা তুমি নিজেই ভাই!", "ওটিপি আনার মিশনে তুমি १०० তে १०० পাস! সাব্বাস!", "তোমার আইকিউ লেভেল দেখে আইন্সটাইনও হিংসা করত ভাই!", "ওটিপি তো আসলোই, সাথে বোনাস হিসেবে এডমিনের ভালোবাসাও নিয়ে গেলা!", "কাজে কোনো ফাঁকিবাজি নাই, ওটিপি এনে প্রমাণ করে দিলা!", "তুমি তো ওটিপি আনার মেশিন ভাই! জাস্ট আনস্টপেবল!", "এই ওটিপি দেখার পর মনের ভেতর কোকিল ডেকে উঠল মামা!", "মেথডের পাওয়ার আর তোমার ব্রেনের জোর, ওটিপি আসতে বাধ্য!", "অবশ্যই। নিচে ঠিক আপনার দেওয়া ফরম্যাটে — কমা, উদ্ধৃতি, লাইন ব্রেক, এবং প্রতিটি লাইনের ধারাবাহিকতা রেখে — হুবহু বাংলা অনুবাদ দেওয়া হলো","লাইন যখন প্রো-প্লেয়ার থাকে, ওটিপি নিজেই চলে আসে!", "ওটিপি এক্সপিরিয়েন্স নিয়ে আসা তোমাকে একদিন অনেক দূরে নিয়ে যাবে!", "এক শটে ওটিপি ক্লিয়ার! সত্যিই কাজ করছ কাজী মামা!", "ওটিপি সাকসেস! তোমার ফোকাস দেখে সত্যিই আমি ইম্প্রেসড!", "তুমিই অনলাইন ওয়ার্কের আসল হিরো ভাই! ওটিপি এনে দেখিয়ে দিলে!", "তোমার মেথডের স্পিড দেখে সার্ভার ফ্রিজ হয়ে গেল! জটিল কাজ!", "ওটিপি এনে পুরো ড্যাশবোর্ডে আগুন লাগিয়ে দিলে মামা!", "কাজে যদি এই ডেডিকেশন থাকে, তাহলে সাকসেস তোমার পায়ে চুমু খাবে!", "ওটিপি পারফেক্ট টাইমে এসেছে, তোমার টাইমিংয়ের প্রশংসা করতে হবে!", "এই কাজ এত সুন্দরভাবে হচ্ছে কারণ তুমি আছো! থ্যাঙ্কস ভাই!", "ওটিপি সাকসেসফুল! তোমার মেথড ডায়েরিতে লেখার মতো!", "এত কম সময়ে এত পারফেক্ট ওয়ার্ক? তুমি সত্যিই জিনিয়াস মামা!", "ওটিপি এসে গেছে, এখন ডলার পকেটে ঢোকার অপেক্ষা!", "সব ভালো যার শেষ ভালো! ওটিপি হয়ে গেছে, তুমি বেস্ট!", "তুমি যখন ওটিপি আনো, তখন মনে হয় ঈদের চাঁদ উঠেছে!", "এমন স্পিডে ওটিপি এনেছো যে গুগলও কনফিউজ হয়ে গেছে!", "ওয়েল ডান বয়! তোমার মেথড টোটালি ইন্টারন্যাশনাল লেভেল!", "ওটিপি সাবমিশন স্টাইল ছিল টোটালি রয়্যাল ভাই!", "তুমি কাজের উস্তাদ ভাই, তোমার ইশারায় ওটিপি নাচে!", "নাম্বারই দিইনি এখনো, ওটিপি চলে এলো! এটা প্রো লেভেল স্পিড!", "তোমার কাজের স্পিড দেখে নেটওয়ার্কের ৫জিও লজ্জা পেয়ে গেছে!", "মেথড অনেকেই জানে, কিন্তু ওটিপি আনার আসল কারিগর তুমি!", "ওটিপি এসে বলল: 'বস আমি চলে এসেছি, পেমেন্ট রেডিও করো!'", "এই কাজের জন্য তুমি মেডেল পাওয়ার যোগ্য মামা!", "তোমার মেথড দেখে অন্য ইউজারদের চোখ বড় বড় হয়ে যাচ্ছে!", "ওটিপি না, রকেট বুস্টার! কাজ মুহূর্তে শেষ!", "তুমি এলে ড্যাশবোর্ডে শুধু সাকসেস আর সাকসেস দেখা যায়!", "ওটিপি আনার জন্য আজকের রিওয়ার্ড হলো আন্তরিক ধন্যবাদ অ্যাডমিনের পক্ষ থেকে!", "ওটিপির কোনো কথাই নেই, তুমি টোটালি ফায়ার ভাই!", "যা সবাই পারে না, তুমি এক সেকেন্ডে করে ফেলো!", "ওটিপি হয়ে গেছে! তোমার ধৈর্য আর মেথড সত্যিই প্রশংসনীয় ভাই!", "ওটিপি কোথায় যাবে তোমার টাচ ছাড়া মামা!", "কাজের কোয়ালিটি দেখে মন তাজা হয়ে গেল!", "ওটিপি আনার এই পারফেক্ট স্কিল সত্যিই এক্সট্রাঅর্ডিনারি!", "তুমি সত্যিই কাজের রত্ন, ওটিপি এনে প্রজেক্ট বাঁচিয়ে দিলে!", "উইথড্র করা তোমার হক ভাই, কাজ যেমন স্পিড তেমন!", "ওটিপি এসে গেছে, এখন আরাম কর মামা!", "তোমার মতো ডেডিকেটেড ইউজার পাওয়া ভাগ্যের ব্যাপার!", "ওটিপি আসে তুমি নাম্বার দাও, তুমি কি তোমার ম্যাজিক বলবে ভাই?", "ওটিপি সাকসেস! এখন অ্যাকাউন্ট ব্যালেন্স বাড়বে রাজকীয় স্পিডে!", "তোমার ফোকাস আর কাজের মেথড দুটোই জাস্ট আউটস্ট্যান্ডিং!", "ওটিপি আনার এই খেলা তোমার হাতের মুঠোয় ভাই!", "খাঁটি কাজের খাঁটি মেথড, ওটিপি এনে দিলে ব্লাস্ট!", "তুমি আজকের সেরা ওটিপি মাস্টার ঘোষণা করা হলো!", "ওটিপি এসে গেছে, পেমেন্টের পথ একদম ক্লিয়ার!", "তুমি ওটিপি আনলে প্যানেলের প্রফিট গ্রাফ লাফিয়ে ওঠে!", "তুমি কাজের উস্তাদ, তোমার মেথড সর্বদা এভারগ্রিন!", "ওটিপি হয়ে গেছে! এখন একটা কাপ কফি peacefully খাও ভাই!", "তুমি ওটিপি আনার ট্রাফিক পুলিশ ভাই, সব জ্যাম ক্লিয়ার করে দাও!", "একের পর এক ওটিপি এনে দিচ্ছ, সার্ভার আনন্দে চির্চির করছে!", "পারফেক্ট টাইমিং আর পারফেক্ট মেথডের জুটি পাওয়া দুষ্কর!", "ওটিপি সাকসেস! তোমার কাজের স্টাইল জাস্ট লা-জওয়াব মামা!", "কাজের প্রতি এত ভালোবাসা থাকলে অনলাইন দুনিয়া তোমার হাতে!", "ওটিপি এসে প্যানেলকে বরকত দিলে, থ্যাঙ্কস ভাই!", "তোমার মতো ট্যালেন্টেড ছেলেরা এই লাইনের গর্ব!", "ওটিপি হয়ে গেছে! অ্যাডমিন এখন তোমার পেমেন্ট প্রসেস করতে ব্যস্ত!", "তুমি জটিল মেথডগুলোকে পানির মতো সহজ করে দেখাও মামা!", "ওটিপি এসে গেছে, মিশন সাকসেসফুল! তুমি বস!", "এই কাজের জন্য শতভাগ নম্বর ভাই!", "ওটিপি এসে গেছে, এখন পকেটে ডলারের ঝনঝনানি শুরু হোক!", "তোমার কাজের স্পিড দেখে অ্যাডমিনের চোখে আনন্দের জল!", "ওটিপি স্কিল দেখে মনে হয় এই লাইনে তোমার পিএইচডি আছে!", "আজ ওটিপি এনে পুরো ড্যাশবোর্ড নেড়ে দিলে মামা!", "টোটালি ফিনিশড! ওটিপি সাকসেসফুল, তুমি আসল হিরো!"];
+    
+    const failMessages = ["ওটিপি আনতে হলে হরলিক্স খাও!", "টেল মেখে একাউন্ট খোলো!", "ওটিপি কি জ্যামে আটকেছে মামা?", "ওটিপি যেন আকাশের চাঁদ, দেখাই মেলে না!", "ভুল ওটিপি দিয়া সার্ভার গরম কইরো না!", "ওটিপির স্পিড কচ্ছপের চেয়েও স্লো!", "ওটিপি কি শ্বশুরবাড়ি বেড়াতে গেছে?", "ওটিপি আসে না, অথচ টাকার লোভ ষোলোআনা!", "ওটিপির বক্সে কি তোমার নাম লিখতে বলছিলাম?", "ওটিপিটা কি তোমার নানার বাড়ির আবদার?", "ওটিপি আনতে গিয়ে কি সর্ষে ফুল দেখলা?", "ওটিপি তো না, যেন সোনার হরিণ!", "ভুল নিয়মে কাজ করার বিশ্বরেকর্ড তোমারই হবে!", "ওটিপি নাই, ডায়ালগ বেশি তোমার!", "ওটিপি আনতে এসে কি মেথড ভুলে গেলা?", "আগে ওটিপি আনো, তারপর ডলার খোঁজো!", "ওটিপি আনছ নাকি কৌতুক লিখছ?", "এই ওটিপি দেখতে হলে কলিজা লাগে ভাই!", "মেথড কোথায় রাজার মামা?", "তোমার দ্বারা কিচ্ছু হবে না!", "চিপসের প্যাকেটে হাওয়া ভরো গে!", "জ্ঞানের দোকান বন্ধ কেন আজ?", "লজিক তো পুরোই কোমায় গেছে!", "ওটিপি আনার নামে চাটনি বানাইলা মিয়া!", "এই মেথড তো ডাইনোসর আমলের!", "কাজ করছ নাকি মশার কয়েল জ্বালছ?", "এত ভুল মেথড কোত্থেকে আবিষ্কার করলা?", "তোমার মেথড দেখে এডমিন অজ্ঞান!", "ভাইরে ভাই, কাজটা তো অন্তত ঠিক করো!", "কাজের নামে আলু ভর্তা বানায় দিলা!", "এত ক্রিয়েটিভ ভুল কেমনে করো ভাই?", "মেথড চেঞ্জ করো, নাহলে বাঁশ রেডি!", "কাজটা তো একদম পানির মতো নষ্ট করলা!", "এই মেথড দিয়ে তো ভিক্ষাও মিলবে না!", "একটু ভালো মেথড কি মাথায় আসে না?", "কাজ করছ নাকি ইয়ার্কি মারছ আমাদের সাথে?", "এই মেথড দিয়ে তো ইঁদুরও ধরা পড়বে না!", "ভুল করার তো একটা লিমিট থাকে মামা!", "কাজ ডাস্টবিনে ফেলে দিয়েছ মামা!", "তোমার মেথড পুরোই ব্যাকডেটেড!", "কাজটা তো উল্টো গিয়ার চলে!", "মেথডের নামে এইটা কি ললিপপ দিলা?", "পুরো মেথডটাই তো গিলে খেয়েছ ভাই!", "তোমার এই মেথড মঙ্গোলিয়াতেও চলবে না!", "ব্যাকডেটেড ব্রেন নিয়া আপডেটেড ভাব?", "ব্রেনটা কি ফ্রিজে রেখে এসেছ ভাই?", "ওটিপি দেওয়ার বুদ্ধি কি চিপসের প্যাকেটে?", "মগজটা একটু রিভুট মেরে আসো তো!", "এত কম বুদ্ধি নিয়ে এই লাইনে কে আনল?", "বুদ্ধির কোটা কি তোমার জিরো ভাই?", "ব্রেন সেল মনে হয় সব বিক্রি করে দিছ!", "তোমার মাথায় বুদ্ধি নাকি সর্ষে দানা?", "লজিকের তো পুরা দাফন কাফন করে দিলা!", "মাথা ঠান্ডা করো, ব্রেনে একটু জল ঢালো!", "তোমার আইকিউ তো মাইনাসে চলে গেছে!", "ব্রেনের মেমোরি কার্ডটা একটু ফরম্যাট করো!", "জ্ঞানের দোকানটা তালা মেরে দাও ভাই!", "সস্তা নেশার জোর নাকি এত ভুল কাজের?", "মেমোরি ফুল, কিন্তু ব্রেন একদম ফাঁকা!", "চিন্তা তোমার পুরোই উল্টো গিয়ার চলে!", "মাথার ভেতর কি মশার কয়েল জ্বলছে?", "তোমার ব্রেন তো পুরোই নো-সার্ভিস এরিয়া!", "আইকিউ টেস্ট করলে তো ডাক্তারও পালাবে!", "মাথার ছাদ ফাঁকা, মুখে বড় কথা!", "তোমার মাথা তো পুরোই ফাঁকা বালতি!", "এই বুদ্ধি দিয়ে টাকা তুলবা মামা?", "ভবিষ্যৎ পুরোই আন্ধার দেখতেছি তোমার!", "এত তাড়াহুড়ো? একটু তেল মাখো পায়ে!", "ব্যালেন্স নাই, উইথড্র দেওয়ার ভাব আছে!", "ফাঁকা একাউন্ট নিয়ে উইথড্র মারতে আসছ?", "কাজ নাই, খালি টাকা তোলার ধান্দা!", "আগে কাজ শিখো, তারপর পকেট ভরো!", "টাকা কি আকাশ থেকে পড়বে মামা?", "ভুল কাজ করে পেমেন্ট আশা করা পাপ!", "পেমেন্ট মেথড দিছ নাকি ধাঁধা বানাইছ?", "এক টাকাও ইনকাম নাই, উইথড্রর লাইন সবার আগে!", "এই কাজের জন্য তো জরিমানা হওয়া দরকার!", "টাকা তোলার আগে কাজটা তো ঠিক করো ভাই!", "উইথড্র দিয়ে কি বিরিয়ানি খাবা মামা?", "ভুল কাজ সাবমিট করে ডলারের স্বপ্ন?", "পকেটে নাই আনা, উইথড্র দিতে চায় ষোলোআনা!", "টাকা কি গাছে ধরে যে ভুল কাজেও পেমেন্ট দিমু?", "আগে ওটিপির মেথড শেখো, তারপর ক্যাশআউট করো!", "ব্যালেন্স জিরো, তাও বাটনে চাপাচাপি বন্ধ নাই!", "অনলাইন জগত তোমার জন্য না ভাই, মাঠে যাও!", "তুমি বরং চিপসের প্যাকেটে হাওয়া ভরার ফ্যাক্টরিতে যাও!", "ভাই, তুমি একটু চা খেয়ে মাথা ঠান্ডা করো!", "তুমি কি আসলেই মানুষ নাকি কোনো রোবট?", "এই কাজ দেখার পর আমার চোখ ধুয়ে আসতে হবে!", "ওটিপি আনার নাম করে কি ঘুমাচ্ছো নাকি মামা?", "তোমার এই ওটিপি না আনার মেথড দেখে তো ছাগলও হাসবে!", "ওটিপি তো আসলোই না, উল্টো সার্ভার নিজের মাথায় হাত দিয়ে বসে আছে!", "ভাইরে ভাই, ওটিপি সাবমিট করতে বলছি, কোনো মহাকাব্য লিখতে বলি নাই!", "তোমার ওটিপির স্পিড দেখে মনে হচ্ছে ওটা হেঁটে হেঁটে আমেরিকা থেকে আসছে!", "কাজটা তো একদম গুড় দিয়ে গোবর করে দিলা!", "ওটিপি আনতে গিয়ে কি বাটন চাপার শক্তিও হারিয়ে ফেললা ভাই?", "এত ফালতু কাজ করলে তো কোম্পানি দেউলিয়া হয়ে যাবে!", "ওটিপি নাই, কাজের ঠিক নাই—কিন্তু পেমেন্টের সময় সবার আগে হাত পাতা রেডি!", "তোমার মগজে কি ওটিপির বদলে শুধুই ফাঁকা হাওয়া ভরা?", "ওটিপি তো দূরে থাক, তুমি তো নাম্বারের শেষ দুইটা ডিজিটও মিলাতে পারো নাই!", "তোমার কাজের বহর দেখে মনে হচ্ছে তুমি ওটিপি না, ডাইনোসরের ডিম খুঁজতে গেছ!", "এই ওটিপি আনার স্কিল নিয়ে অনলাইন জগতে আসা আর মরুভূমিতে সাতার কাটা একই কথা!"];
+     const countryData = {
     "1": "🇺🇸 USA", "1": "🇨🇦 Canada", // North America
     "1242": "🇧🇸 Bahamas", "1246": "🇧🇧 Barbados", "1264": "🇦🇮 Anguilla", "1268": "🇦🇬 Antigua", "1284": "🇻🇬 British Virgin", "1345": "🇰🇾 Cayman Islands", "1441": "🇧🇲 Bermuda", "1473": "🇬🇩 Grenada", "1649": "🇹🇨 Turks and Caicos", "1664": "🇲🇸 Montserrat", "1721": "🇸🇽 Sint Maarten", "1758": "🇱🇨 Saint Lucia", "1767": "🇩🇲 Dominica", "1784": "🇻🇨 St. Vincent", "1809": "🇩🇴 Dominican Republic", "1829": "🇩🇴 Dominican Republic", "1849": "🇩🇴 Dominican Republic", "1868": "🇹🇹 Trinidad and Tobago", "1869": "🇰🇳 St. Kitts", "1876": "🇯🇲 Jamaica", "1658": "🇯🇲 Jamaica",
     
@@ -255,48 +471,18 @@ const countryData = {
     
     "800": "🇮🇱 Israel", "808": "🇲🇵 Northern Mariana", "81": "🇯🇵 Japan", "82": "🇰🇷 South Korea", "84": "🇻🇳 Vietnam", "850": "🇰🇵 North Korea", "852": "🇭🇰 Hong Kong", "853": "🇲🇴 Macao", "855": "🇰🇭 Cambodia", "856": "🇱🇦 Laos", "86": "🇨🇳 China", "880": "🇧🇩 Bangladesh", "886": "🇹🇼 Taiwan", "90": "🇹🇷 Turkey", "91": "🇮🇳 India", "92": "🇵🇰 Pakistan", "93": "🇦🇫 Afghanistan", "94": "🇱🇰 Sri Lanka", "95": "🇲🇲 Myanmar", "960": "🇲🇻 Maldives", "961": "🇱🇧 Lebanon", "962": "🇯🇴 Jordan", "963": "🇸🇾 Syria", "964": "🇮🇶 Iraq", "965": "🇰🇼 Kuwait", "966": "🇸🇦 Saudi Arabia", "967": "🇾🇪 Yemen", "968": "🇴🇲 Oman", "969": "🇵🇸 Palestine", "970": "🇵🇸 Palestine", "971": "🇦🇪 UAE", "972": "🇮🇱 Israel", "973": "🇧🇭 Bahrain", "974": "🇶🇦 Qatar", "975": "🇧🇹 Bhutan", "976": "🇲🇳 Mongolia", "977": "🇳🇵 Nepal", "98": "🇮🇷 Iran", "992": "🇹🇯 Tajikistan", "993": "🇹🇲 Turkmenistan", "994": "🇦🇿 Azerbaijan", "995": "🇬🇪 Georgia", "996": "🇰🇬 Kyrgyzstan", "998": "🇺🇿 Uzbekistan"
 };
-
+    
+    // ======================== HELPER FUNCTIONS ========================
     function getCountryInfo(num) {
         if(!num) return "Global 🌐";
         const clean = num.toString().replace(/\D/g, '');
-        for (let i = 4; i >= 1; i--) { let pref = clean.substring(0, i); if (countryData[pref]) return countryData[pref]; }
+        for (let i = 4; i >= 1; i--) { 
+            let pref = clean.substring(0, i); 
+            if (countryData[pref]) return countryData[pref]; 
+        }
         return "International 🌐";
     }
-
-    // ফরম্যাটিং করার জন্য নতুন হেল্পার ফাংশন
-    function getFormattedNumber(fullNum) {
-        let n = fullNum.toString().replace(/\s+/g, '');
-        const hidePlus = document.getElementById('noPlusToggle').checked;
-        const hideCode = document.getElementById('noCountryCodeToggle').checked;
-
-        // প্রথমে যদি Hide Country Code অন থাকে তবে কোড রিমুভ করব
-        if (hideCode) {
-            let temp = n.startsWith('+') ? n.slice(1) : n;
-            let prefixFound = "";
-            // সবথেকে বড় প্রিফিক্স ম্যাচ করার চেষ্টা করবে
-            for (let i = 4; i >= 1; i--) {
-                let pref = temp.substring(0, i);
-                if (countryData[pref]) {
-                    prefixFound = pref;
-                    break;
-                }
-            }
-            if (prefixFound) {
-                n = temp.substring(prefixFound.length);
-            }
-        }
-
-        // এবার Plus (+) হ্যান্ডেল করা হবে
-        if (hidePlus && n.startsWith('+')) {
-            n = n.slice(1);
-        } else if (!hidePlus && !n.startsWith('+') && !hideCode) {
-            // যদি হাইড কোড অফ থাকে তবেই কেবল প্লাস যোগ হবে
-            n = '+' + n;
-        }
-
-        return n;
-    }
-
+    
     function formatKolaNumber(num) {
         if(!num) return "---";
         const n = num.toString();
@@ -304,318 +490,617 @@ const countryData = {
         const end = n.substring(n.length - 3);
         return `${start}<span class="kola-text">KOLA</span>${end}`;
     }
-
-    function detectLanguage(text) {
-        if (!text) return "Unknown";
-        const t = text.toLowerCase();
-        if (/[\u0980-\u09FF]/.test(text)) return "Bengali (বাংলা)";
-        if (/[\u0900-\u097F]/.test(text)) {
-            if (t.includes("नेपाली")) return "Nepali (नेपाली)";
-            if (t.includes("मराठी")) return "Marathi (मরাঠী)";
-            if (t.includes("ગુજરાતી")) return "Gujarati (ગુજરાતી)";
-            return "Hindi (हिन्दी)";
-        }
-        if (/[\u0B80-\u0BFF]/.test(text)) return "Tamil (தமிழ்)";
-        if (/[\u0C00-\u0C7F]/.test(text)) return "Telugu (తెలుగు)";
-        if (/[\u0D00-\u0D7F]/.test(text)) return "Malayalam (മലയാളം)";
-        if (/[\u0CB0-\u0CFF]/.test(text)) return "Kannada (ಕನ್ನಡ)";
-        if (/[\u0600-\u06FF]/.test(text)) {
-            if (t.includes("اردو")) return "Urdu (اردو)";
-            if (t.includes("فارسی")) return "Persian (فارسی)";
-            return "Arabic (العربية)";
-        }
-        if (/[\u0400-\u04FF]/.test(text)) {
-            if (t.includes("українська")) return "Ukrainian (Українська)";
-            if (t.includes("български")) return "Bulgarian (Български)";
-            return "Russian (Русский)";
-        }
-        if (/[\u4E00-\u9FFF]/.test(text)) return "Chinese (中文)";
-        if (/[\u3040-\u309F\u30A0-\u30FF]/.test(text)) return "Japanese (日本語)";
-        if (/[\uAC00-\uD7AF]/.test(text)) return "Korean (한국어)";
-        if (/[\u0E00-\u0E7F]/.test(text)) return "Thai (ไทย)";
-        if (/[\u1000-\u109F]/.test(text)) return "Burmese (မြန်မာ)";
-        if (/[\u1780-\u17FF]/.test(text)) return "Khmer (ភាសាខ្មဲর)";
-        if (/[\u0E80-\u0EFF]/.test(text)) return "Lao (ພາສາລາວ)";
-        if (/[\u0D80-\u0DFF]/.test(text)) return "Sinhala (සිંහල)";
-        if (/[\u0590-\u05FF]/.test(text)) return "Hebrew (עבריত)";
-        if (/[\u0370-\u03FF]/.test(text)) return "Greek (Ελληνικά)";
-        if (/[\u1200-\u137F]/.test(text)) return "Amharic (አማርኛ)";
-        if (t.includes("código")) {
-            if (t.includes("seu") || t.includes("é")) return "Portuguese (Português)";
-            return "Spanish (Español)";
-        }
-        if (t.includes("votre code")) return "French (Français)";
-        if (t.includes("dein code")) return "German (Deutsch)";
-        if (t.includes("codice")) return "Italian (Italiano)";
-        if (t.includes("onay kodu")) return "Turkish (Türkçe)";
-        if (t.includes("kode anda") || t.includes("adalah")) return "Indo/Malay";
-        if (t.includes("mã xác minh")) return "Vietnamese (Tiếng Việt)";
-        if (t.includes("iyong code")) return "Filipino (Tagalog)";
-        if (t.includes("nambari yako")) return "Swahili (Kiswahili)";
-        if (t.includes("twój kod")) return "Polish (Polski)";
-        if (t.includes("codul tău")) return "Romanian (Română)";
-        if (t.includes("uw code")) return "Dutch (Nederlands)";
-        if (t.includes("ellenőrző kód")) return "Hungarian (Magyar)";
-        if (t.includes("vahvistuskoodi")) return "Finnish (Suomi)";
-        if (t.includes("din kode") || t.includes("din kod")) return "Scan/Danish/Norw";
-        if (t.includes("lambar")) return "Hausa";
-        if (t.includes("namba yakho")) return "Zulu/Afrikaans";
-        if (t.includes("tasdiqlash kodi")) return "Uzbek (Oʻzbekcha)";
-        if (/[a-z]/.test(t)) return "English (US/UK)";
-        return "Global 🌐";
-    }
-
-    function detectCompany(text) {
-        if (!text) return "SMS";
-        const t = text.toUpperCase();
-        if(t.includes("FACEBOOK") || t.includes("FB")) return "FACEBOOK";
-        if(t.includes("GOOGLE") || t.includes("G-")) return "GOOGLE";
-        if(t.includes("WHATSAPP") || t.includes("WA")) return "WHATSAPP";
-        if(t.includes("IMO")) return "IMO";
-        if(t.includes("TIKTOK")) return "TIKTOK";
-        if(t.includes("TELEGRAM") || t.includes("TG")) return "TELEGRAM";
-        if(t.includes("APPLE") || t.includes("ICLOUD")) return "APPLE";
-        return "SERVICE";
-    }
-
+    
     function findMatchedRange(phoneNum) {
         let clean = phoneNum.replace(/\D/g, '');
-        return clean.substring(0, 6);
+        return clean.substring(0, 7) + "XXX";
     }
-
-    function useRange(r) {
-        if(!r) return;
-        const cleanR = r.toString().replace('XXX','');
-        document.getElementById('ridInput').value = cleanR;
-        saveInputs();
-        showSection('generate-sec');
+    
+    function smartCopy(t) {
+        const h = document.getElementById('copyHelper');
+        h.value = t.toString().replace(/\s+/g, '');
+        h.select();
+        document.execCommand('copy');
+        document.getElementById('toast').style.display = 'block';
+        setTimeout(()=> document.getElementById('toast').style.display='none', 1500);
     }
-
+    
+    function unlockAudio() {
+        if(!audioUnlocked) {
+            otpSound.play().then(() => { otpSound.pause(); audioUnlocked = true; }).catch(()=>{});
+        }
+    }
+    
+    function updateUI() { 
+        document.getElementById('balance').innerText = currentBalance.toFixed(2); 
+    }
+    
+    function updateModalBalance() { 
+        document.getElementById('modalBalance').innerText = currentBalance.toFixed(2); 
+        document.getElementById('modalWorkerID').innerText = myWorkerID; 
+    }
+    
+    function saveInputs() { 
+        localStorage.setItem('saved_rid_' + currentPanel, document.getElementById('ridInput').value); 
+    }
+    
+    function loadInputs() { 
+        document.getElementById('ridInput').value = localStorage.getItem('saved_rid_' + currentPanel) || ''; 
+    }
+    
+    function closeSuccessPopup() { 
+        document.getElementById('successPopup').style.display = 'none'; 
+        showHome(); 
+    }
+    
+    // ======================== PANEL SWITCH ========================
+    function switchPanel(panel) {
+        currentPanel = panel;
+        if(panel === 'voltex') {
+            currentConfig = VOLTEX_CONFIG;
+            document.getElementById('voltexPanelBtn').classList.add('voltex-active');
+            document.getElementById('zenexPanelBtn').classList.remove('zenex-active');
+            document.getElementById('panelStatus').className = 'panel-status voltex';
+            document.getElementById('panelStatus').innerHTML = '🔴 VOLTEX ACTIVE';
+        } else {
+            currentConfig = ZENEX_CONFIG;
+            document.getElementById('zenexPanelBtn').classList.add('zenex-active');
+            document.getElementById('voltexPanelBtn').classList.remove('voltex-active');
+            document.getElementById('panelStatus').className = 'panel-status zenex';
+            document.getElementById('panelStatus').innerHTML = '🟣 ZENEX ACTIVE';
+        }
+        
+        localStorage.setItem('selected_panel', currentPanel);
+        
+        if(myWorkerID) {
+            loadUserBalance();
+            renderMyNumbers();
+            if(document.getElementById('generate-sec').style.display === 'block') {
+                clearInterval(liveTimer);
+                liveTimer = setInterval(getOTPs, 3000);
+            }
+            if(document.getElementById('live-feed-sec').style.display === 'block') {
+                clearInterval(liveTimer);
+                liveTimer = setInterval(fetchConsole, 4000);
+            }
+            loadServices();
+        }
+    }
+    
+    async function loadUserBalance() {
+        if(!myWorkerID) return;
+        try {
+            const snap = await database.ref('users/' + myWorkerID).once('value');
+            if(snap.exists()) currentBalance = Number(snap.val().balance || 0);
+            updateUI();
+        } catch(e) { console.log("Balance load error", e); }
+    }
+    
+    async function syncBalanceToFirebase() {
+        if(myWorkerID) {
+            database.ref('users/' + myWorkerID).update({ balance: Number(currentBalance.toFixed(2)) });
+        }
+    }
+    
+    // ======================== AUTHENTICATION ========================
     async function handleUserAuth() {
         const u = document.getElementById('usernameInput').value.trim().toLowerCase();
         const p = document.getElementById('passwordInput').value.trim();
         if (u.length < 4 || p.length < 4) { alert("Username and Password must be 4+ chars!"); return; }
-        const btn = document.getElementById('authBtn'); btn.disabled = true; btn.innerText = "Checking...";
+        const btn = document.getElementById('authBtn'); 
+        btn.disabled = true; 
+        btn.innerText = "Checking...";
+        
         const userRef = database.ref('users/' + u);
         try {
             const snap = await userRef.once('value');
             if (snap.exists()) {
                 if (snap.val().password === p) {
-                    myWorkerID = u; currentBalance = Number(snap.val().balance || 0);
-                    localStorage.setItem('worker_id', myWorkerID); document.getElementById('loginOverlay').style.display = 'none'; updateUI();
+                    myWorkerID = u; 
+                    currentBalance = Number(snap.val().balance || 0);
+                    localStorage.setItem('worker_id', myWorkerID);
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    updateUI();
+                    loadInputs();
+                    renderMyNumbers();
+                    await loadServices();
                 } else { alert("Wrong Password!"); }
             } else {
-                await userRef.set({ workerID: u, password: p, balance: 0, lastLogin: new Date().toLocaleString() });
-                myWorkerID = u; localStorage.setItem('worker_id', myWorkerID);
-                document.getElementById('loginOverlay').style.display = 'none'; updateUI();
+                await userRef.set({ workerID: u, password: p, balance: 0, lastLogin: getFormattedTimeForOTP() });
+                myWorkerID = u; 
+                localStorage.setItem('worker_id', myWorkerID);
+                document.getElementById('loginOverlay').style.display = 'none';
+                updateUI();
+                loadInputs();
+                renderMyNumbers();
+                await loadServices();
             }
-        } catch (e) { alert("Database Error!"); } finally { btn.disabled = false; btn.innerText = "প্রবেশ করুন"; }
+        } catch (e) { alert("Database Error: " + e.message); }
+        finally { btn.disabled = false; btn.innerText = "প্রবেশ করুন"; }
     }
-
-    async function syncBalanceToFirebase() {
-        if (myWorkerID) database.ref('users/' + myWorkerID).update({ balance: Number(currentBalance.toFixed(2)) });
-    }
-
+    
+    // ======================== OTP FUNCTIONS ========================
     async function getOTPs() {
         const now = Date.now();
         myRequests = myRequests.filter(req => (now - req.createdAt) < (25 * 60 * 1000));
         try {
-            const res = await fetch(`${BASE_URL}/success-otp`, { headers });
+            const headers = {};
+            headers[currentConfig.headerKey] = currentConfig.API_KEY;
+            headers['Content-Type'] = 'application/json';
+            
+            const res = await fetch(`${currentConfig.BASE_URL}${currentConfig.successOtpEndpoint}`, { headers });
             const d = await res.json();
-            if(!d.data || !d.data.otps) { renderMyNumbers(); return; }
+            
+            let otps = [];
+            if(currentPanel === 'voltex' && d.data?.otps) {
+                otps = d.data.otps;
+            } else if(currentPanel === 'zenex' && d.data?.otps) {
+                otps = d.data.otps;
+            }
+            
+            if(otps.length === 0) { renderMyNumbers(); return; }
+            
+            // Store OTPs globally
+            globalOtpsStore = otps;
+            
             let updated = false;
-            d.data.otps.forEach(otp => {
-                const codeMatch = otp.message.match(/(?:\d[\s-]?){4,8}\d/);
+            otps.forEach(otp => {
+                const msg = otp[currentConfig.messageField];
+                const codeMatch = msg.match(/(?:\d[\s-]?){4,8}\d/);
                 const code = codeMatch ? codeMatch[0].replace(/\s+/g, '') : null;
+                const number = otp[currentConfig.numberField];
+                const otpId = otp[currentConfig.otpIdField];
+                
+                if (!otpArrivalTimes[otpId]) {
+                    otpArrivalTimes[otpId] = getFormattedTimeForOTP();
+                }
+                
                 myRequests.forEach(req => {
-                    if(!req.receivedOtpIds.includes(otp.otp_id) && req.full.includes(otp.number.slice(-6))) {
+                    if(!req.receivedOtpIds.includes(otpId) && req.full.includes(number.slice(-6))) {
                         currentBalance += (req.receivedOtpIds.length === 0) ? 0.30 : 0.20;
-                        req.receivedOtpIds.push(otp.otp_id); 
+                        req.receivedOtpIds.push(otpId);
                         req.otp = code;
-                        if(code) {
-                            smartCopy(code);
-                            if (audioUnlocked && document.getElementById('soundToggle').checked) {
-                                otpSound.currentTime = 0;
-                                otpSound.play().catch(e => {});
-                            }
-                        }
+                        req.otpArrivalTime = otpArrivalTimes[otpId];
                         if (!req.statusMsg) req.statusMsg = successMessages[Math.floor(Math.random() * successMessages.length)];
+                        if(code && audioUnlocked && document.getElementById('soundToggle').checked) otpSound.play();
                         updated = true;
                     }
                 });
             });
-            if(updated) { updateUI(); syncBalanceToFirebase(); localStorage.setItem('apple_balance', currentBalance); localStorage.setItem('apple_reqs', JSON.stringify(myRequests)); }
-            renderMyNumbers();
             
-            document.getElementById('otpHistoryBody').innerHTML = d.data.otps.slice(0, 100).map(otp => {
-                if (!otpArrivalTimes[otp.otp_id]) otpArrivalTimes[otp.otp_id] = new Date().toLocaleTimeString('en-US', { hour12: true });
-                const codeMatch = otp.message.match(/(?:\d[\s-]?){4,8}\d/);
-                const code = codeMatch ? codeMatch[0].replace(/\s+/g, '') : null;
-                const originalRange = findMatchedRange(otp.number);
-                return `<div class="grid-row">
-                    <div><div>${formatKolaNumber(otp.number)}</div><div class="country-label">${getCountryInfo(otp.number)}</div><div class="range-sub-text" onclick="useRange('${originalRange}')">${originalRange}XXX</div></div>
-                    <div><span class="service-badge">${detectCompany(otp.message)}</span><br><span class="lang-badge">${detectLanguage(otp.message)}</span></div>
-                    <div class="small text-white" style="font-size:0.7rem;">${otp.message}</div>
-                    <div>${code ? `<div class="otp-copy-btn" onclick="smartCopy('${code}')">${code}</div>` : `---`}<span class="otp-time-label">${otpArrivalTimes[otp.otp_id]}</span></div>
-                </div>`;
-            }).join('');
-        } catch(e){}
+            if(updated) { 
+                updateUI(); 
+                syncBalanceToFirebase(); 
+                localStorage.setItem('apple_reqs', JSON.stringify(myRequests)); 
+            }
+            renderMyNumbers();
+            renderOTPHistory(otps);
+        } catch(e){ console.log("OTP fetch error", e); }
     }
-
+    
+    function renderOTPHistory(otps) {
+        if(!otps || otps.length === 0) {
+            document.getElementById('otpHistoryBody').innerHTML = '<div class="text-center text-dim p-4">No OTPs received yet...</div>';
+            return;
+        }
+        
+        document.getElementById('otpHistoryBody').innerHTML = otps.slice(0, 100).map(otp => {
+            const number = otp[currentConfig.numberField];
+            let msg = otp[currentConfig.messageField];
+            const otpId = otp[currentConfig.otpIdField];
+            
+            if (!otpArrivalTimes[otpId]) {
+                otpArrivalTimes[otpId] = getFormattedTimeForOTP();
+            }
+            const arrivalTime = otpArrivalTimes[otpId];
+            
+            const codeMatch = msg.match(/(?:\d[\s-]?){4,8}\d/);
+            const code = codeMatch ? codeMatch[0].replace(/\s+/g, '') : null;
+            
+            // Detect provider and language using advanced functions
+            const provider = detectProviderAdvanced(msg);
+            const language = detectLanguageAdvanced(msg);
+            
+            // For Zenex, sometimes the message is in 'otp' field
+            if(currentPanel === 'zenex' && !msg && otp.otp) {
+                msg = otp.otp;
+            }
+            
+            return `<div class="grid-row">
+                <div>
+                    <div>${formatKolaNumber(number)}</div>
+                    <div class="country-label">${getCountryInfo(number)}</div>
+                    <div class="range-sub-text" onclick="useRange('${findMatchedRange(number)}')">${findMatchedRange(number)}</div>
+                </div>
+                <div>
+                    <span class="service-badge">${provider}</span>
+                    <span class="lang-badge">${language}</span>
+                    ${currentPanel === 'zenex' ? `<div class="provider-name"><i class="fa-regular fa-building me-1"></i>${provider}</div>` : ''}
+                </div>
+                <div class="small text-white" style="font-size:0.7rem; word-break:break-word;">${escapeHtml(msg ? msg.substring(0, 150) : 'No message content')}</div>
+                <div>
+                    ${code ? `<div class="otp-copy-btn" onclick="smartCopy('${code}')">${code}</div>` : `<div class="otp-copy-btn" style="background:#333;">---</div>`}
+                    <span class="otp-time-label"><i class="fa-regular fa-clock me-1"></i>${arrivalTime}</span>
+                </div>
+            </div>`;
+        }).join('');
+    }
+    
+    function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
     function renderMyNumbers() {
-        const list = document.getElementById('myRequestsList'); if(!list) return;
+        const list = document.getElementById('myRequestsList'); 
+        if(!list) return;
         const now = Date.now();
+        const hidePlus = document.getElementById('noPlusToggle')?.checked || false;
+        const hideCode = document.getElementById('noCountryCodeToggle')?.checked || false;
         myRequests = myRequests.filter(req => (now - req.createdAt) < (25 * 60 * 1000));
         localStorage.setItem('apple_reqs', JSON.stringify(myRequests));
-
+        
+        if(myRequests.length === 0) {
+            list.innerHTML = '<div class="text-dim text-center p-3">No active numbers</div>';
+            return;
+        }
+        
         list.innerHTML = myRequests.map(req => {
-            // সেটিংস অনুযায়ী নাম্বার ফরম্যাট করা
-            let n = getFormattedNumber(req.full);
+            let n = req.full; 
+            if(hidePlus) n = n.replace('+', ''); 
+            if(hideCode) n = n.slice(-10);
             const minutesElapsed = (now - req.createdAt) / (1000 * 60);
-            let statusHtml = '';
-            let msgHtml = '';
-            let textDecor = 'none';
-
+            let statusHtml = '', msgHtml = '', textDecor = 'none';
+            
             if (req.otp) {
                 statusHtml = `<div class="otp-copy-btn px-2" onclick="smartCopy('${req.otp}')">${req.otp}</div>`;
-                msgHtml = `<div style="color: var(--neon-green); font-size: 0.65rem; margin-top: 3px; line-height: 1.2;">${req.statusMsg}</div>`;
+                msgHtml = `<div style="color: var(--neon-green); font-size: 0.65rem; margin-top: 3px;">
+                    ${req.statusMsg}<br>
+                    <span class="small text-dim"><i class="fa-regular fa-clock me-1"></i>${req.otpArrivalTime || 'Time recorded'}</span>
+                </div>`;
             } else if (minutesElapsed >= 20) {
                 statusHtml = `<span class="text-danger small fw-bold">DEACTIVATED</span>`;
                 if(!req.statusMsg) req.statusMsg = failMessages[Math.floor(Math.random() * failMessages.length)];
-                msgHtml = `<div style="color: #ff3b30; font-size: 0.65rem; margin-top: 3px; line-height: 1.2;">${req.statusMsg}</div>`;
+                msgHtml = `<div style="color: #ff3b30; font-size: 0.65rem; margin-top: 3px;">${req.statusMsg}</div>`;
                 textDecor = 'line-through';
             } else {
                 statusHtml = `<span class="text-warning blink small fw-bold">PENDING...</span>`;
             }
-
-            return `<div class="my-num-row mb-3 pb-2" style="border-bottom: 1px solid #1a1a1a;">
-                <div class="my-num-flex d-flex justify-content-between align-items-center">
-                    <div onclick="smartCopy('${n}')" style="cursor:pointer; text-decoration: ${textDecor};">
-                        <span class="service-label-small" style="font-size: 0.6rem; color: var(--telegram-blue);">${req.sid}</span><br>
-                        <b style="font-size: 0.9rem;">${n}</b>
+            return `<div class="my-num-row mb-3 pb-2" style="border-bottom:1px solid #1a1a1a;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div onclick="smartCopy('${n}')" style="cursor:pointer; text-decoration:${textDecor};">
+                        <span style="font-size:0.6rem; color:var(--telegram-blue);">${req.sid}</span><br>
+                        <b style="font-size:0.9rem;">${n}</b>
                     </div>
                     <div>${statusHtml}</div>
-                </div>
-                ${msgHtml}
+                </div>${msgHtml}
             </div>`;
         }).join('');
     }
-
-    async function sendToTelegram() {
-        const m = document.getElementById('payoutMethod').value, n = document.getElementById('payoutNumber').value;
-        if (currentBalance < 10 || !n) { alert("৳১০ এর নিচে উইথড্র সম্ভব নয়!"); return; }
-        const dateStr = new Date().toLocaleString('en-GB', { hour12: true });
-        const withdrawMsg = `💰 PRO PAYOUT REQUEST\n━━━━━━━━━━━━━━━━━━\n🗓️ তারিখ : ${dateStr}\n👤 ইউজার: \`${myWorkerID}\`\n📱 মোবাইল নম্বর : \`${n}\`\n💵 উইথড্র এমাউন্ট : ৳${currentBalance.toFixed(2)}\n💳 মেথড : ${m}\n━━━━━━━━━━━━━━━━━━`;
+    
+    // ======================== NUMBER GENERATION ========================
+    async function generateNow() {
+        const rid = document.getElementById('ridInput').value; 
+        if(!rid) {
+            alert("Please enter a Range ID (e.g., 4473845)");
+            return;
+        }
+        
+        const genBtn = document.getElementById('genBtn');
+        genBtn.disabled = true;
+        genBtn.innerText = "Generating...";
+        
         try {
-            const btn = document.getElementById('payoutBtn'); btn.disabled = true;
-            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: withdrawMsg, parse_mode: 'Markdown' }) });
-            if(res.ok) {
-                await database.ref('users/' + myWorkerID).update({ balance: 0 }); currentBalance = 0; updateUI();
-                bootstrap.Modal.getInstance(document.getElementById('withdrawModal')).hide();
-                document.getElementById('successPopup').style.display = 'block';
-                setTimeout(closeSuccessPopup, 3000);
+            const headers = {};
+            headers[currentConfig.headerKey] = currentConfig.API_KEY;
+            headers['Content-Type'] = 'application/json';
+            
+            const body = currentConfig.getnumBody(rid);
+            const res = await fetch(`${currentConfig.BASE_URL}/getnum`, { method: 'POST', headers, body: JSON.stringify(body) });
+            const d = await res.json();
+            
+            if(d.meta?.code === 200 && d.data?.full_number) {
+                let fullNumber = d.data.full_number;
+                if(!fullNumber.startsWith('+')) fullNumber = '+' + fullNumber;
+                smartCopy(fullNumber);
+                myRequests.unshift({ 
+                    full: fullNumber, 
+                    sid: document.getElementById('serviceSelect').value || currentConfig.name, 
+                    otp: null, 
+                    receivedOtpIds: [], 
+                    createdAt: Date.now(), 
+                    statusMsg: null,
+                    otpArrivalTime: null
+                });
+                localStorage.setItem('apple_reqs', JSON.stringify(myRequests));
+                renderMyNumbers();
+            } else {
+                alert("Number generation failed: " + (d.message || "Unknown error"));
             }
-        } catch(e){} finally { document.getElementById('payoutBtn').disabled = false; }
+        } catch(e) { 
+            alert("API Error: " + e.message); 
+        } finally {
+            genBtn.disabled = false;
+            genBtn.innerText = "Generate Now";
+        }
     }
-
-    function updateUI() { document.getElementById('balance').innerText = currentBalance.toFixed(2); }
-    function updateModalBalance() { document.getElementById('modalBalance').innerText = currentBalance.toFixed(2); document.getElementById('modalWorkerID').innerText = myWorkerID; }
-    function showHome() { clearInterval(liveTimer); document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none'); document.getElementById('home-screen').style.display = 'block'; }
-    async function showSection(id) {
-        document.getElementById('home-screen').style.display = 'none'; document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none'); document.getElementById(id).style.display = 'block';
-        if(id === 'generate-sec') { loadInputs(); liveTimer = setInterval(getOTPs, 2000); }
-        if(id === 'live-feed-sec') { fetchConsole(); liveTimer = setInterval(fetchConsole, 3000); }
-        if(id === 'all-ranges-sec') fetchAllRanges();
-        await loadServices();
+    
+    // ======================== SERVICES & RANGES ========================
+    async function loadServices() {
+        try {
+            const headers = {};
+            headers[currentConfig.headerKey] = currentConfig.API_KEY;
+            
+            const res = await fetch(`${currentConfig.BASE_URL}${currentConfig.liveaccessEndpoint}`, { headers });
+            const d = await res.json();
+            
+            if(currentPanel === 'voltex' && d.data?.services) {
+                allServicesData = d.data.services;
+                const sSelect = document.getElementById('serviceSelect');
+                sSelect.innerHTML = '<option value="">-- Service --</option>';
+                d.data.services.forEach(s => sSelect.innerHTML += `<option value="${s.sid}">${s.sid}</option>`);
+            } 
+            else if(currentPanel === 'zenex' && d.data?.active_ranges) {
+                const servicesMap = new Map();
+                d.data.active_ranges.forEach(r => {
+                    if(!servicesMap.has(r.service)) {
+                        servicesMap.set(r.service, { sid: r.service, ranges: [] });
+                    }
+                    servicesMap.get(r.service).ranges.push(r.range);
+                });
+                allServicesData = Array.from(servicesMap.values());
+                const sSelect = document.getElementById('serviceSelect');
+                sSelect.innerHTML = '<option value="">-- Service --</option>';
+                allServicesData.forEach(s => sSelect.innerHTML += `<option value="${s.sid}">${s.sid}</option>`);
+            }
+        } catch(e) { 
+            console.log("Service load error", e);
+        }
     }
-    async function fetchConsole() { try { const res = await fetch(`${BASE_URL}/console`, { headers }); const d = await res.json(); liveHitsData = d.data.hits; filterLiveFeed(); } catch(e){} }
+    
+    function loadRanges() {
+        const sid = document.getElementById('serviceSelect').value;
+        const s = allServicesData?.find(x => x.sid === sid);
+        const rSelect = document.getElementById('rangeSelect');
+        rSelect.innerHTML = '<option value="">-- Choose Range --</option>';
+        if(s && s.ranges) {
+            s.ranges.forEach(r => rSelect.innerHTML += `<option value="${r}">${r}</option>`);
+        }
+    }
+    
+    async function fetchAllRanges() {
+        try {
+            const headers = {};
+            headers[currentConfig.headerKey] = currentConfig.API_KEY;
+            
+            const res = await fetch(`${currentConfig.BASE_URL}${currentConfig.liveaccessEndpoint}`, { headers });
+            const d = await res.json();
+            
+            if(currentPanel === 'voltex' && d.data?.services) {
+                allServicesData = d.data.services;
+                document.getElementById('service-grid').innerHTML = d.data.services.map(s => `<div class="col-6"><div class="main-card p-3" onclick="viewSubRanges('${s.sid}')"><b>${s.sid}</b></div></div>`).join('');
+            }
+            else if(currentPanel === 'zenex' && d.data?.active_ranges) {
+                const servicesMap = new Map();
+                d.data.active_ranges.forEach(r => {
+                    if(!servicesMap.has(r.service)) {
+                        servicesMap.set(r.service, { sid: r.service, ranges: [] });
+                    }
+                    servicesMap.get(r.service).ranges.push(r.range);
+                });
+                allServicesData = Array.from(servicesMap.values());
+                document.getElementById('service-grid').innerHTML = allServicesData.map(s => `<div class="col-6"><div class="main-card p-3" onclick="viewSubRanges('${s.sid}')"><b>${s.sid}</b><span class="d-block small text-dim">${s.ranges.length} ranges</span></div></div>`).join('');
+            }
+        } catch(e) { console.log("Fetch ranges error", e); }
+    }
+    
+    function viewSubRanges(sid) {
+        showSection('sub-range-sec');
+        const s = allServicesData?.find(x => x.sid === sid);
+        document.getElementById('sub-range-grid').innerHTML = (s?.ranges || []).map(r => `<div class="col-4"><div class="main-card p-2" onclick="useRange('${r}')">${r}</div></div>`).join('');
+    }
+    
+    async function fetchConsole() {
+        try {
+            const headers = {};
+            headers[currentConfig.headerKey] = currentConfig.API_KEY;
+            
+            const res = await fetch(`${currentConfig.BASE_URL}${currentConfig.consoleEndpoint}`, { headers });
+            const d = await res.json();
+            
+            if(currentPanel === 'voltex' && d.data?.hits) {
+                liveHitsData = d.data.hits;
+            }
+            else if(currentPanel === 'zenex' && d.data?.active_ranges) {
+                liveHitsData = d.data.active_ranges.map(r => ({ 
+                    sid: r.service, 
+                    message: `${r.service} - OTP Service (${r.hits || 0} hits)`, 
+                    range: r.range,
+                    hits: r.hits
+                }));
+            }
+            filterLiveFeed();
+        } catch(e) { console.log("Console fetch error", e); }
+    }
     
     function filterLiveFeed() {
         const q = document.getElementById('liveSearchInput').value.toLowerCase();
         const f = liveHitsData.filter(h => (h.sid || "").toLowerCase().includes(q) || (h.range || "").toLowerCase().includes(q));
-        document.getElementById('consoleItems').innerHTML = f.map(h => {
-            const country = getCountryInfo(h.range);
-            return `<div class="grid-row">
-                <div class="text-info fw-bold">${h.sid}<br><span class="country-label" style="font-size:0.6rem;">${country}</span></div>
-                <div><span class="lang-badge">${detectLanguage(h.message)}</span></div>
-                <div class="small text-white">${h.message}</div>
-                <div onclick="useRange('${h.range}')" style="cursor:pointer; color:var(--apple-red); font-weight:bold;">${h.range}</div>
-            </div>`
-        }).join('');
+        if(f.length === 0) {
+            document.getElementById('consoleItems').innerHTML = '<div class="text-center text-dim p-4">No active ranges found</div>';
+            return;
+        }
+        document.getElementById('consoleItems').innerHTML = f.map(h => `<div class="grid-row">
+            <div class="text-info fw-bold">${h.sid}${h.hits ? `<span class="ms-1 small text-dim">(${h.hits})</span>` : ''}</div>
+            <div><span class="lang-badge">${detectLanguageAdvanced(h.message)}</span></div>
+            <div class="small text-white">${escapeHtml(h.message.substring(0, 80))}</div>
+            <div onclick="useRange('${h.range}')" style="cursor:pointer; color:var(--apple-red); font-weight:bold;">${h.range}</div>
+        </div>`).join('');
     }
-
-    async function fetchAllRanges() { const res = await fetch(`${BASE_URL}/liveaccess`, { headers }); const d = await res.json(); window.allServicesData = d.data.services; document.getElementById('service-grid').innerHTML = d.data.services.map(s => `<div class="col-6"><div class="main-card p-3" onclick="viewSubRanges('${s.sid}')"><b>${s.sid}</b></div></div>`).join(''); }
     
-    function viewSubRanges(sid) { 
-        showSection('sub-range-sec'); 
-        const s = window.allServicesData.find(x => x.sid === sid); 
-        document.getElementById('sub-range-grid').innerHTML = (s.ranges || []).map(r => `<div class="col-4"><div class="main-card p-2" onclick="useRange('${r}')" style="font-size: 0.75rem;">${r}</div></div>`).join(''); 
-    }
-
-    async function loadServices() { try { const res = await fetch(`${BASE_URL}/liveaccess`, { headers }); const d = await res.json(); window.allServicesData = d.data.services; const sSelect = document.getElementById('serviceSelect'); sSelect.innerHTML = '<option value="">-- Service --</option>'; d.data.services.forEach(s => sSelect.innerHTML += `<option value="${s.sid}">${s.sid}</option>`); } catch(e){} }
-    function loadRanges() { const sid = document.getElementById('serviceSelect').value; const s = window.allServicesData.find(x => x.sid === sid); const rSelect = document.getElementById('rangeSelect'); rSelect.innerHTML = '<option value="">-- Range --</option>'; if(s) s.ranges.forEach(r => rSelect.innerHTML += `<option value="${r}">${r}</option>`); }
-    function syncRID() { document.getElementById('ridInput').value = document.getElementById('rangeSelect').value.replace('XXX',''); saveInputs(); }
-    
-    async function generateNow() {
-        const rid = document.getElementById('ridInput').value.trim();
-        if(!rid) { alert("দুঃখিত! রেঞ্জ বা RID এর ঘরটি খালি রাখা যাবে না।"); return; }
-        if(rid.length < 3) { alert("ভুল রেঞ্জ! দয়া করে সঠিক RID প্রদান করুন।"); return; }
+    async function fetchTopHitRanges() {
+        const container = document.getElementById('topHitsList');
+        if(container) container.innerHTML = '<div class="text-center text-dim p-4"><i class="fa-solid fa-spinner fa-spin me-2"></i>Loading top hit ranges...</div>';
+        
         try {
-            const res = await fetch(`${BASE_URL}/getnum`, { method: 'POST', headers, body: JSON.stringify({ rid }) });
+            const headers = {};
+            headers[currentConfig.headerKey] = currentConfig.API_KEY;
+            
+            const res = await fetch(`${currentConfig.BASE_URL}${currentConfig.consoleEndpoint}`, { headers });
             const d = await res.json();
-            if(d.meta.code === 200) {
-                let rawNum = d.data.full_number;
-                // জেনারেট হওয়ার পর সেটিংস অনুযায়ী ফরম্যাট করে কপি করবে
-                let formatted = getFormattedNumber(rawNum);
-                smartCopy(formatted);
-                
-                myRequests.unshift({ 
-                    full: rawNum, 
-                    sid: document.getElementById('serviceSelect').value || "SMS", 
-                    otp: null, 
-                    receivedOtpIds: [], 
-                    createdAt: Date.now(), 
-                    statusMsg: null 
-                });
-                localStorage.setItem('apple_reqs', JSON.stringify(myRequests)); 
-                renderMyNumbers();
+            
+            let hitsArray = [];
+            if(currentPanel === 'voltex' && d.data?.hits) {
+                hitsArray = d.data.hits;
+            } else if(currentPanel === 'zenex' && d.data?.active_ranges) {
+                hitsArray = d.data.active_ranges.map(r => ({ range: r.range, hits: r.hits || 0, service: r.service }));
             }
-        } catch(e){}
+            
+            if(hitsArray.length > 0) {
+                const rangeMap = new Map();
+                hitsArray.forEach(hit => {
+                    if(hit.range) {
+                        const current = rangeMap.get(hit.range) || 0;
+                        rangeMap.set(hit.range, current + (hit.hits || 1));
+                    }
+                });
+                
+                const sortedRanges = Array.from(rangeMap.entries())
+                    .map(([range, hits]) => ({ range, hits }))
+                    .sort((a, b) => b.hits - a.hits)
+                    .slice(0, 20);
+                
+                if(sortedRanges.length === 0) {
+                    container.innerHTML = '<div class="text-center text-dim p-4">No hit data available yet.</div>';
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <div class="mb-3 small text-dim">📊 Current Panel: ${currentConfig.name} | ${sortedRanges.length} active hit ranges</div>
+                    ${sortedRanges.map((item, index) => `
+                        <div class="hit-rank-card" style="border-left:4px solid ${index+1 === 1 ? '#FFD700' : (index+1 === 2 ? '#C0C0C0' : (index+1 === 3 ? '#CD7F32' : '#ff3b30'))};" onclick="useRange('${item.range}')">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <span class="rank-number" style="color:${index+1 === 1 ? '#FFD700' : (index+1 === 2 ? '#C0C0C0' : (index+1 === 3 ? '#CD7F32' : '#fff'))};">#${index+1}</span>
+                                    <div>
+                                        <div class="fw-bold text-white">${item.range}</div>
+                                        <div class="hit-count"><i class="fa-solid fa-chart-simple me-1"></i>${item.hits} successful OTPs</div>
+                                    </div>
+                                </div>
+                                <button class="use-range-btn" onclick="event.stopPropagation(); useRange('${item.range}')">
+                                    <i class="fa-solid fa-play me-1"></i> Use
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            } else {
+                container.innerHTML = '<div class="text-center text-dim p-4">No console data available. Please wait for OTPs to arrive.</div>';
+            }
+        } catch(e) {
+            console.log("Top hits fetch error", e);
+            container.innerHTML = '<div class="text-center text-danger p-4">Failed to load top hit ranges. Please try again.</div>';
+        }
     }
     
-    function unlockAudio() { if(!audioUnlocked) { otpSound.play().then(() => { otpSound.pause(); audioUnlocked = true; }).catch(e => {}); } }
+    function syncRID() { 
+        document.getElementById('ridInput').value = document.getElementById('rangeSelect').value.replace('XXX',''); 
+        saveInputs(); 
+    }
     
-    function smartCopy(t) { 
-        const h = document.getElementById('copyHelper'); 
-        h.value = t.toString().replace(/\s+/g, ''); 
-        h.select(); 
-        h.setSelectionRange(0, 99999);
+    function useRange(r) { 
+        document.getElementById('ridInput').value = r.replace('XXX',''); 
+        showSection('generate-sec'); 
+        saveInputs(); 
+    }
+    
+    // ======================== WITHDRAWAL ========================
+    async function sendToTelegram() {
+        const m = document.getElementById('payoutMethod').value, n = document.getElementById('payoutNumber').value;
+        if (currentBalance < 10 || !n) { alert("৳১০ এর নিচে উইথড্র সম্ভব নয়!"); return; }
+        const dateStr = getFormattedTimeForOTP();
+        const withdrawMsg = `💰 ${currentConfig.name} PANEL PAYOUT\n━━━━━━━━━━━━━━━━━━\n🗓️ ${getBangladeshDateString()}\n⏰ ${dateStr}\n👤 USER: \`${myWorkerID}\`\n📱 NUMBER: \`${n}\`\n💵 AMOUNT: ৳${currentBalance.toFixed(2)}\n💳 METHOD: ${m}\n━━━━━━━━━━━━━━━━━━`;
         try {
-            document.execCommand('copy'); 
-            document.getElementById('toast').style.display = 'block'; 
-            setTimeout(()=> document.getElementById('toast').style.display='none', 1500); 
-        } catch (err) {}
+            const btn = document.getElementById('payoutBtn'); 
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ chat_id: CHAT_ID, text: withdrawMsg, parse_mode: 'Markdown' }) 
+            });
+            if(res.ok) {
+                await database.ref('users/' + myWorkerID).update({ balance: 0 });
+                currentBalance = 0; 
+                updateUI();
+                bootstrap.Modal.getInstance(document.getElementById('withdrawModal')).hide();
+                document.getElementById('successPopup').style.display = 'block';
+                setTimeout(closeSuccessPopup, 3000);
+            } else {
+                alert("Telegram send failed!");
+            }
+        } catch(e){
+            alert("Error: " + e.message);
+        } finally { 
+            btn.disabled = false;
+            btn.innerText = "Submit Request";
+        }
     }
-
-    function saveInputs() { localStorage.setItem('saved_rid', document.getElementById('ridInput').value); }
-    function loadInputs() { document.getElementById('ridInput').value = localStorage.getItem('saved_rid') || ''; }
-    function closeSuccessPopup() { document.getElementById('successPopup').style.display = 'none'; showHome(); }
-
-    window.onload = async () => { 
-        if (myWorkerID) {
-            document.getElementById('loginOverlay').style.display = 'none';
-            const snapshot = await database.ref('users/' + myWorkerID).once('value');
-            if(snapshot.exists()) currentBalance = Number(snapshot.val().balance || 0);
-            updateUI(); loadInputs(); renderMyNumbers();
-        } else { document.getElementById('loginOverlay').style.display = 'flex'; }
+    
+    // ======================== UI NAVIGATION ========================
+    function showHome() { 
+        clearInterval(liveTimer); 
+        document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none'); 
+        document.getElementById('home-screen').style.display = 'block'; 
+    }
+    
+    async function showSection(id) {
+        document.getElementById('home-screen').style.display = 'none';
+        document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        
+        if(id === 'generate-sec') { 
+            loadInputs(); 
+            if(liveTimer) clearInterval(liveTimer);
+            liveTimer = setInterval(getOTPs, 3000); 
+            await loadServices(); 
+        }
+        if(id === 'live-feed-sec') { 
+            fetchConsole(); 
+            if(liveTimer) clearInterval(liveTimer);
+            liveTimer = setInterval(fetchConsole, 4000); 
+        }
+        if(id === 'all-ranges-sec') {
+            fetchAllRanges();
+        }
+        if(id === 'top-hits-sec') {
+            fetchTopHitRanges();
+        }
+    }
+    
+    // ======================== INITIALIZATION ========================
+    window.onload = async () => {
+        const savedPanel = localStorage.getItem('selected_panel') || 'voltex';
+        switchPanel(savedPanel);
         
         setInterval(() => {
-            const now = new Date();
-            const bdTime = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Dhaka', hour12: true });
-            const bdDate = now.toLocaleDateString('en-GB', { timeZone: 'Asia/Dhaka', day: '2-digit', month: 'long', year: 'numeric' });
-            document.getElementById('liveTime').innerText = bdTime;
-            document.getElementById('liveDate').innerText = bdDate;
+            document.getElementById('liveTime').innerText = getBangladeshTime12Hour();
+            document.getElementById('liveDate').innerText = getBangladeshDateString();
         }, 1000);
+        
+        if (myWorkerID) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            await loadUserBalance();
+            loadInputs();
+            renderMyNumbers();
+        } else {
+            document.getElementById('loginOverlay').style.display = 'flex';
+        }
         
         setInterval(renderMyNumbers, 30000);
     };
